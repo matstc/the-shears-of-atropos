@@ -11,3 +11,9 @@ export interface GraphEdge extends SimulationLinkDatum<GraphNode> {
   source: number | GraphNode;
   target: number | GraphNode;
 }
+
+export type Scores = Record<1 | 2, number>
+
+export type Player1OrPlayer2 = 1|2
+
+export type GraphNodeWithPosition = GraphNode & { x?: number, y?: number }

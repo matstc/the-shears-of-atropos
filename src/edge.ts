@@ -1,7 +1,7 @@
 import { GameObj } from "kaplay"
 import "kaplay/global"
 
-export const edgeFactory = (node1:GameObj, node2:GameObj, onRemove: (edge:GameObj) => void): GameObj => {
+export const edgeFactory = (node1:GameObj, node2:GameObj, onRemove: (edge:GameObj) => void, getCurrentColor: Function): GameObj => {
   const dx = node2.pos.x - node1.pos.x
   const dy = node2.pos.y - node1.pos.y
   const distance = Math.sqrt(dx * dx + dy * dy)
@@ -20,7 +20,7 @@ export const edgeFactory = (node1:GameObj, node2:GameObj, onRemove: (edge:GameOb
 
   edge.onHover(() => {
     setCursor("pointer")
-    edge.color = rgb(255, 100, 100)
+    edge.color = Color.fromHex(getCurrentColor())
   })
 
   edge.onHoverEnd(() => {

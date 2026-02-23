@@ -19,9 +19,9 @@ export const nodeFactory = (opt: NodeOpt, onRemove: (node:GameObj) => void): Gam
     "shape",
     "node",
     {
-      edges: [],
-      removeEdge(edge) {
-        this.edges = this.edges.filter(x => x !== edge)
+      edges: [] as GameObj[],
+      removeEdge(this: any, edge: GameObj) {
+        this.edges = this.edges.filter((x:GameObj) => x !== edge)
         if (this.edges.length === 0) {
           onRemove(node)
           node.destroy()
