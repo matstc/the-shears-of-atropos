@@ -54,26 +54,30 @@ export const edgeFactory = (node1: GameObj, node2: GameObj, onRemove: (edge: Gam
           (val) => this.color = val,
           easings.easeOutQuad
         )
+      },
+      async pluck() {
+        if (this.isDeleting) return;
+
+        this.isDeleting = true;
+
+        if (isTouchscreen()) {
+          this.activate();
+          await wait(0.2);
+        }
+
+        node1.removeEdge(this);
+        node2.removeEdge(this);
+        setCursor("default");
+        onRemove(this);
+        this.destroy();
       }
     },
   ])
 
   edge.onClick(async () => {
     if (!edge.active) return;
-    if (edge.isDeleting) return;
 
-    edge.isDeleting = true;
-
-    if (isTouchscreen()) {
-      edge.activate();
-      await wait(0.2);
-    }
-
-    node1.removeEdge(edge);
-    node2.removeEdge(edge);
-    setCursor("default");
-    onRemove(edge);
-    edge.destroy();
+    edge.pluck()
   })
 
   node1.edges.push(edge)

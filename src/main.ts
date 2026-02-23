@@ -5,6 +5,7 @@ import { dotsAndBoxesFactory } from "./graph";
 import { GraphEdge, GraphNode, Player1OrPlayer2, Scores } from "./types";
 import { backgroundColor, PLAYER_COLORS } from "./styles";
 import { createHud } from "./hud";
+import { makeRandomMoveForCpu } from "./ai";
 
 const k = kaplay({
   background: backgroundColor,
@@ -16,9 +17,10 @@ k.loadRoot("./"); // A good idea for Itch.io publishing later
 let currentPlayer:Player1OrPlayer2 = 1;
 const scores:Scores = { 1: 0, 2: 0 };
 const misere = true;
+const vsCPU = true;
 const hud = createHud(k, misere)
 
-const { simulation, nodes: simulationNodes, edges: simulationEdges } = dotsAndBoxesFactory(4)
+const { simulation, nodes: simulationNodes, edges: simulationEdges } = dotsAndBoxesFactory(5)
 
 const onRemoveNode = (sNode:GraphNode, node:GameObj) => {
   const idx = simulationNodes.indexOf(sNode);
@@ -47,6 +49,10 @@ const onRemoveEdge = (sEdge: GraphEdge, edge: GameObj) => {
 
   hud.update(currentPlayer, scores);
   simulation.alpha(0.03).restart();
+
+  if (vsCPU && currentPlayer === 2) {
+    makeRandomMoveForCpu(edgeInstances, misere);
+  }
 };
 
 const nodeInstances = simulationNodes.map(n => nodeFactory({ x: n.x!, y: n.y! }, onRemoveNode.bind(null, n)));
@@ -107,17 +113,19 @@ onUpdate(() => {
   const edges = get("edge").filter(e => e.hovering);
   const nodes = get("node").filter(e => e.hovering);
 
-  if (nodes.length > 0) {
-    get("edge").filter(e => e.active).map(e => e.deactivate())
-    setCursor("default");
-  } else if (edges.length > 0) {
-    const first = edges[0]
-    get("edge").filter(e => e !== first && e.active).map(e => e.deactivate())
-    first.activate()
-    setCursor("pointer");
-  } else {
-    get("edge").filter(e => e.active).map(e => e.deactivate())
-    setCursor("default");
+  if (!vsCPU || currentPlayer == 1) {
+    if (nodes.length > 0) {
+      get("edge").filter(e => e.active).map(e => e.deactivate())
+      setCursor("default");
+    } else if (edges.length > 0) {
+      const first = edges[0]
+      get("edge").filter(e => e !== first && e.active).map(e => e.deactivate())
+      first.activate()
+      setCursor("pointer");
+    } else {
+      get("edge").filter(e => e.active).map(e => e.deactivate())
+      setCursor("default");
+    }
   }
 
   if (simulation.alpha() >= simulation.alphaMin()) {
