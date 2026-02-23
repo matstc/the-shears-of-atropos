@@ -1,6 +1,8 @@
-import kaplay from "kaplay";
+import kaplay, { GameObj } from "kaplay";
 import { nodeFactory } from "./node";
 import { edgeFactory } from "./edge";
+import { graphFactory } from "./graph";
+import { GraphEdge, GraphNode } from "./types";
 
 const k = kaplay({
   background: [222, 222, 222],
@@ -8,34 +10,57 @@ const k = kaplay({
 
 k.loadRoot("./"); // A good idea for Itch.io publishing later
 
-let winner = null
-const world:any = {
-  nodes: [],
-  edges: []
+const { simulation, nodes: simulationNodes, edges: simulationEdges } = graphFactory(12, 20)
+
+const onRemoveNode = (sNode:GraphNode, node:GameObj) => {
+  const idx = simulationNodes.indexOf(sNode);
+  if (idx > -1) simulationNodes.splice(idx, 1);
+
+  const objIdx = nodeInstances.indexOf(node);
+  if (objIdx > -1) nodeInstances.splice(objIdx, 1);
 }
 
-const node1 = nodeFactory({ x: 60, y: 40 })
-const node2 = nodeFactory({ x: 34, y: 120 })
-const node3 = nodeFactory({ x: 134, y: 120 })
-const node4 = nodeFactory({ x: 64, y: 220 })
-const edge1 = edgeFactory(node1, node2)
-const edge3 = edgeFactory(node2, node3)
-const edge2 = edgeFactory(node3, node4)
+const onRemoveEdge = (sEdge:GraphEdge, edge:GameObj) => {
+  const idx = simulationEdges.indexOf(sEdge);
+  if (idx > -1) simulationEdges.splice(idx, 1);
 
-world.nodes.push(node1)
-world.nodes.push(node2)
-world.nodes.push(node3)
-world.nodes.push(node4)
-world.edges.push(edge1)
-world.edges.push(edge2)
-world.edges.push(edge3)
+  const objIdx = edgeInstances.indexOf(edge);
+  if (objIdx > -1) edgeInstances.splice(objIdx, 1);
 
-const handleKeyDown = function () {
-
+  simulation.alpha(1).restart();
 }
+
+const nodeInstances = simulationNodes.map(n => nodeFactory({ x: n.x!, y: n.y! }, onRemoveNode.bind(null, n)));
+const edgeInstances = simulationEdges.map(e => {
+  const sIdx = (e.source as GraphNode).id;
+  const tIdx = (e.target as GraphNode).id;
+  return edgeFactory(nodeInstances[sIdx], nodeInstances[tIdx], onRemoveEdge.bind(null, e));
+});
 
 onUpdate(() => {
-  if (!winner) {
-    handleKeyDown()
-  }
-})
+  if (simulation.alpha() < simulation.alphaMin()) return;
+
+  simulation.tick();
+
+  // 2. Update Node positions
+  nodeInstances.forEach((obj, i) => {
+    const simNode = simulationNodes[i];
+    obj.pos.x = simNode.x!;
+    obj.pos.y = simNode.y!;
+  });
+
+  // 3. Update Edge positions, angles, and lengths
+  edgeInstances.forEach((edgeObj) => {
+    const n1 = edgeObj.node1;
+    const n2 = edgeObj.node2;
+
+    const dx = n2.pos.x - n1.pos.x;
+    const dy = n2.pos.y - n1.pos.y;
+
+    edgeObj.pos = vec2(n1.pos.x, n1.pos.y);
+    edgeObj.angle = Math.atan2(dy, dx) * (180 / Math.PI);
+
+    // Use .width to update the rect component's size
+    edgeObj.width = Math.sqrt(dx * dx + dy * dy);
+  });
+});

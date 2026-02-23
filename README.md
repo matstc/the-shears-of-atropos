@@ -1,7 +1,8 @@
 # Todos
 
-- Handle 2 players
 - Randomize the graph based on 2 parameters (# nodes + # of edges)
+- Display it nicely
+- Handle 2 players
 - Allow swiping to cut an edge
 - Keep track of scores
 - Game over screen

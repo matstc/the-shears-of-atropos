@@ -6,7 +6,7 @@ export type NodeOpt = {
   y: number
 }
 
-export const nodeFactory = (opt: NodeOpt): GameObj => {
+export const nodeFactory = (opt: NodeOpt, onRemove: (node:GameObj) => void): GameObj => {
   const x = opt.x
   const y = opt.y
 
@@ -14,6 +14,7 @@ export const nodeFactory = (opt: NodeOpt): GameObj => {
     circle(10),
     pos(x, y),
     color(BLACK),
+    anchor("center"),
     z(5),
     "shape",
     "node",
@@ -22,6 +23,7 @@ export const nodeFactory = (opt: NodeOpt): GameObj => {
       removeEdge(edge) {
         this.edges = this.edges.filter(x => x !== edge)
         if (this.edges.length === 0) {
+          onRemove(node)
           node.destroy()
         }
       }
