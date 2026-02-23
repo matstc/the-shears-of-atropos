@@ -1,6 +1,7 @@
 import { GameObj } from "kaplay"
 import "kaplay/global"
 import { hoverable } from "./hoverable"
+import { edgeColor } from "./styles"
 
 export type NodeOpt = {
   x: number
@@ -15,7 +16,7 @@ export const nodeFactory = (opt: NodeOpt, onRemove: (node:GameObj) => void): Gam
   const node = add([
     circle(radius),
     pos(x, y),
-    color("#aaaaaa"),
+    color(Color.fromHex(edgeColor)),
     anchor("center"),
     z(5),
     area(),

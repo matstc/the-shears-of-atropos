@@ -1,14 +1,14 @@
 import { GameObj } from "kaplay"
 import "kaplay/global"
 import { hoverable } from "./hoverable"
+import { edgeColor } from "./styles"
 
 export const edgeFactory = (node1: GameObj, node2: GameObj, onRemove: (edge: GameObj) => void, getCurrentColor: Function): GameObj => {
   const dx = node2.pos.x - node1.pos.x
   const dy = node2.pos.y - node1.pos.y
   const distance = Math.sqrt(dx * dx + dy * dy)
   const angle = Math.atan2(dy, dx) * (180 / Math.PI)
-  const default_color = rgb(200, 200, 200)
-  const anim_duration = 0.2 // seconds
+  const animDuration = 0.2 // seconds
 
   const edge = add([
     rect(distance, 30),
@@ -17,7 +17,7 @@ export const edgeFactory = (node1: GameObj, node2: GameObj, onRemove: (edge: Gam
     anchor("left"),
     area(),
     hoverable(),
-    color(default_color),
+    color(Color.fromHex(edgeColor)),
     "edge",
     {
       node1,
@@ -36,7 +36,7 @@ export const edgeFactory = (node1: GameObj, node2: GameObj, onRemove: (edge: Gam
         this.currentTween = tween(
           this.color,
           targetColor,
-          anim_duration,
+          animDuration,
           (val) => this.color = val,
           easings.easeOutQuad
         )
@@ -49,8 +49,8 @@ export const edgeFactory = (node1: GameObj, node2: GameObj, onRemove: (edge: Gam
 
         this.currentTween = tween(
           this.color,
-          default_color,
-          anim_duration,
+          Color.fromHex(edgeColor),
+          animDuration,
           (val) => this.color = val,
           easings.easeOutQuad
         )
