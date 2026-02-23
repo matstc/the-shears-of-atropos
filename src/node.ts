@@ -9,11 +9,12 @@ export type NodeOpt = {
 export const nodeFactory = (opt: NodeOpt, onRemove: (node:GameObj) => void): GameObj => {
   const x = opt.x
   const y = opt.y
+  const radius = 30
 
   const node = add([
-    circle(30),
+    circle(radius),
     pos(x, y),
-    color(BLACK),
+    color("#aaaaaa"),
     anchor("center"),
     z(5),
     "shape",
@@ -28,6 +29,12 @@ export const nodeFactory = (opt: NodeOpt, onRemove: (node:GameObj) => void): Gam
         }
       }
     }
+  ])
+
+  node.add([
+    circle(radius - 1),
+    color(WHITE),
+    anchor("center"),
   ])
 
   return node
