@@ -1,13 +1,14 @@
 import kaplay, { GameObj } from "kaplay";
 import { nodeFactory } from "./node";
 import { edgeFactory } from "./edge";
-import { dotsAndBoxesFactory, graphFactory } from "./graph";
+import { dotsAndBoxesFactory } from "./graph";
 import { GraphEdge, GraphNode, Player1OrPlayer2, Scores } from "./types";
 import { backgroundColor, PLAYER_COLORS } from "./styles";
 import { createHud } from "./hud";
 
 const k = kaplay({
   background: backgroundColor,
+  pixelDensity: window.devicePixelRatio
 });
 
 k.loadRoot("./"); // A good idea for Itch.io publishing later
