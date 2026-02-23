@@ -1,5 +1,6 @@
 import { GameObj } from "kaplay"
 import "kaplay/global"
+import { hoverable } from "./hoverable"
 
 export type NodeOpt = {
   x: number
@@ -17,6 +18,8 @@ export const nodeFactory = (opt: NodeOpt, onRemove: (node:GameObj) => void): Gam
     color("#aaaaaa"),
     anchor("center"),
     z(5),
+    area(),
+    hoverable(),
     "shape",
     "node",
     {

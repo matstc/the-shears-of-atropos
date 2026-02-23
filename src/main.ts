@@ -103,8 +103,25 @@ const forwardSimulation = function(smoothness:number) {
 }
 
 onUpdate(() => {
-  if (simulation.alpha() < simulation.alphaMin()) return;
+  const edges = get("edge").filter(e => e.hovering);
+  const nodes = get("node").filter(e => e.hovering);
 
-  forwardSimulation(0.05)
+  if (nodes.length > 0) {
+    get("edge").filter(e => e.active).map(e => e.deactivate())
+    setCursor("default");
+  } else if (edges.length > 0) {
+    const first = edges[0]
+    get("edge").filter(e => e !== first && e.active).map(e => e.deactivate())
+    first.activate()
+    setCursor("pointer");
+  } else {
+    get("edge").filter(e => e.active).map(e => e.deactivate())
+    setCursor("default");
+  }
+
+  if (simulation.alpha() >= simulation.alphaMin()) {
+    forwardSimulation(0.05)
+  }
+
   checkGameOver();
 });
