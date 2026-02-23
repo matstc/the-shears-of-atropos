@@ -15,7 +15,7 @@ k.loadRoot("./"); // A good idea for Itch.io publishing later
 let currentPlayer:Player1OrPlayer2 = 1;
 const scores:Scores = { 1: 0, 2: 0 };
 const misere = true;
-const hud = createHud(k)
+const hud = createHud(k, misere)
 
 const { simulation, nodes: simulationNodes, edges: simulationEdges } = graphFactory(7, 12)
 
@@ -78,10 +78,10 @@ onUpdate(() => {
   if (simulation.alpha() < simulation.alphaMin()) return;
 
   simulation.tick();
-
   const padding = 50;
   const w = width();
   const h = height();
+  const smoothness = 0.05;
 
   nodeInstances.forEach((obj, i) => {
     const simNode = simulationNodes[i];
@@ -89,14 +89,13 @@ onUpdate(() => {
     simNode.x = Math.max(padding, Math.min(w - padding, simNode.x || 0));
     simNode.y = Math.max(padding, Math.min(h - padding, simNode.y || 0));
 
-    obj.pos.x = simNode.x!;
-    obj.pos.y = simNode.y!;
+    obj.pos.x = lerp(obj.pos.x, simNode.x, smoothness);
+    obj.pos.y = lerp(obj.pos.y, simNode.y, smoothness);
   });
 
   edgeInstances.forEach((edgeObj) => {
     const n1 = edgeObj.node1;
     const n2 = edgeObj.node2;
-
     const dx = n2.pos.x - n1.pos.x;
     const dy = n2.pos.y - n1.pos.y;
 
@@ -105,5 +104,5 @@ onUpdate(() => {
     edgeObj.width = Math.sqrt(dx * dx + dy * dy);
   });
 
-  checkGameOver()
+  checkGameOver();
 });
