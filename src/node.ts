@@ -11,7 +11,7 @@ export const nodeFactory = (opt: NodeOpt, onRemove: (node:GameObj) => void): Gam
   const y = opt.y
 
   const node = add([
-    circle(10),
+    circle(30),
     pos(x, y),
     color(BLACK),
     anchor("center"),

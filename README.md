@@ -1,6 +1,7 @@
 # Todos
 
 - Ensure one cut at a time (and one hover effect)
+- Add AI
 - Allow changing parameters
 - Allow restarting after game is over
 

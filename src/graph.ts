@@ -2,81 +2,75 @@ import {
   forceSimulation,
   forceLink,
   forceManyBody,
-  forceX,
-  forceY,
-  forceCollide,
+  forceCenter,
   Simulation
 } from "d3-force";
-import { GraphNode, GraphEdge, GraphNodeWithPosition } from "./types.ts"
+import { ExtendedEdge, GraphNodeWithPosition } from "./types.ts"
 
-export function graphFactory(
-  numNodes: number,
-  numEdges: number,
+export function dotsAndBoxesFactory(
+  n: number,
   width: number = 1000,
   height: number = 1000
 ): {
   simulation: Simulation<GraphNodeWithPosition, undefined>;
   nodes: GraphNodeWithPosition[];
-  edges: GraphEdge[];
+  edges: ExtendedEdge[];
 } {
-  const minNodes = 2;
-  const minEdges = numNodes - 1; // Minimum for a connected spanning tree
-  const maxEdges = (numNodes * (numNodes - 1)) / 2; // Maximum for a simple graph
-
-  if (numNodes < minNodes) {
-    throw new Error(`Graph must have at least ${minNodes} nodes.`);
-  }
-  if (numEdges < minEdges) {
-    console.warn(`numEdges (${numEdges}) is too low for a connected graph. Adjusting to ${minEdges}.`);
-    numEdges = minEdges;
-  }
-  if (numEdges > maxEdges) {
-    console.warn(`numEdges (${numEdges}) exceeds max possible edges. Adjusting to ${maxEdges}.`);
-    numEdges = maxEdges;
-  }
-
-  const padding = 50;
-  const nodes: GraphNodeWithPosition[] = Array.from({ length: numNodes }, (_, i) => ({ id: i }));
-  const edges: GraphEdge[] = [];
+  const nodes: GraphNodeWithPosition[] = [];
+  const edges: ExtendedEdge[] = [];
   const edgeSet = new Set<string>();
 
-  const addEdge = (u: number, v: number): boolean => {
-    const key = u < v ? `${u}-${v}` : `${v}-${u}`;
-    if (!edgeSet.has(key) && u !== v) {
-      edges.push({ source: u, target: v });
-      edgeSet.add(key);
-      return true;
-    }
-    return false;
-  };
+  const padding = 150;
+  const cellSize = (width - padding * 2) / (n - 1 || 1);
+  const cx = width / 2;
+  const cy = height / 2;
 
-  for (let i = 1; i < numNodes; i++) {
-    const targetNode = Math.floor(Math.random() * i);
-    addEdge(i, targetNode);
+  const maxRotation = 15 * (Math.PI / 180);
+  const angle = (Math.random() - 0.5) * 2 * maxRotation;
+  const cos = Math.cos(angle);
+  const sin = Math.sin(angle);
+
+  for (let r = 0; r < n; r++) {
+    for (let c = 0; c < n; c++) {
+      const rawX = padding + c * cellSize + (Math.random() - 0.5) * 50;
+      const rawY = padding + r * cellSize + (Math.random() - 0.5) * 50;
+
+      const dx = rawX - cx;
+      const dy = rawY - cy;
+
+      nodes.push({
+        id: r * n + c,
+        x: cx + (dx * cos - dy * sin),
+        y: cy + (dx * sin + dy * cos)
+      });
+    }
   }
 
-  while (edges.length < numEdges) {
-    addEdge(
-      Math.floor(Math.random() * numNodes),
-      Math.floor(Math.random() * numNodes)
-    );
+  const addEdge = (u: number, v: number) => {
+    const key = u < v ? `${u}-${v}` : `${v}-${u}`;
+    if (!edgeSet.has(key)) {
+      edges.push({ source: u, target: v });
+      edgeSet.add(key);
+    }
+  };
+
+  for (let r = 0; r < n; r++) {
+    for (let c = 0; c < n; c++) {
+      const current = r * n + c;
+      if (c < n - 1) addEdge(current, r * n + (c + 1));
+      if (r < n - 1) addEdge(current, (r + 1) * n + c);
+    }
   }
 
   const simulation = forceSimulation<GraphNodeWithPosition>(nodes)
-    .force("link", forceLink<GraphNodeWithPosition, GraphEdge>(edges).id((d) => d.id).distance(150))
-    .force("charge", forceManyBody().strength(-2000))
-    .force("x", forceX(width / 2).strength(0.05))
-    .force("y", forceY(height / 2).strength(0.05))
-    .force("collide", forceCollide().radius(40))
+    .force("link", forceLink<GraphNodeWithPosition, ExtendedEdge>(edges)
+      .id(d => d.id)
+      .distance(cellSize * 0.8)
+      .strength(0.8)
+    )
+    .force("charge", forceManyBody().strength(-cellSize))
+    .force("center", forceCenter(cx, cy))
     .stop();
-
-  for (let i = 0; i < 300; i++) {
-    simulation.tick();
-    nodes.forEach(n => {
-      n.x = Math.max(padding, Math.min(width - padding, n.x || 0));
-      n.y = Math.max(padding, Math.min(height - padding, n.y || 0));
-    });
-  }
 
   return { simulation, nodes, edges };
 }

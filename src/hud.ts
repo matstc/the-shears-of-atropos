@@ -26,7 +26,7 @@ export function createHud(k: KAPLAYCtx<{}, never>, misere: boolean) {
   }
 
   const uiLabel = k.add([
-    k.text(`Go player 1`, { size: 24 }),
+    k.text(`GO PLAYER 1`, { size: 24 }),
     k.pos(20, 20),
     k.color(k.Color.fromHex(PLAYER_COLORS[1])),
     k.z(10),
@@ -43,7 +43,7 @@ export function createHud(k: KAPLAYCtx<{}, never>, misere: boolean) {
 
   return {
     update: (currentPlayer: number, scores: Scores) => {
-      uiLabel.text = `Go player ${currentPlayer}`;
+      uiLabel.text = `GO PLAYER ${currentPlayer}`;
       scoreLabel.text = `P1: ${scores[1]}   P2: ${scores[2]}`;
       uiLabel.color = k.Color.fromHex(PLAYER_COLORS[currentPlayer as 1 | 2]);
     }

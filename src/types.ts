@@ -17,3 +17,8 @@ export type Scores = Record<1 | 2, number>
 export type Player1OrPlayer2 = 1|2
 
 export type GraphNodeWithPosition = GraphNode & { x?: number, y?: number }
+
+export interface ExtendedEdge {
+  source: number;
+  target: number;
+}

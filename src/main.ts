@@ -1,7 +1,7 @@
 import kaplay, { GameObj } from "kaplay";
 import { nodeFactory } from "./node";
 import { edgeFactory } from "./edge";
-import { graphFactory } from "./graph";
+import { dotsAndBoxesFactory, graphFactory } from "./graph";
 import { GraphEdge, GraphNode, Player1OrPlayer2, Scores } from "./types";
 import { backgroundColor, PLAYER_COLORS } from "./styles";
 import { createHud } from "./hud";
@@ -17,7 +17,7 @@ const scores:Scores = { 1: 0, 2: 0 };
 const misere = true;
 const hud = createHud(k, misere)
 
-const { simulation, nodes: simulationNodes, edges: simulationEdges } = graphFactory(7, 12)
+const { simulation, nodes: simulationNodes, edges: simulationEdges } = dotsAndBoxesFactory(4)
 
 const onRemoveNode = (sNode:GraphNode, node:GameObj) => {
   const idx = simulationNodes.indexOf(sNode);
@@ -45,7 +45,7 @@ const onRemoveEdge = (sEdge: GraphEdge, edge: GameObj) => {
   }
 
   hud.update(currentPlayer, scores);
-  simulation.alpha(1).restart();
+  simulation.alpha(0.03).restart();
 };
 
 const nodeInstances = simulationNodes.map(n => nodeFactory({ x: n.x!, y: n.y! }, onRemoveNode.bind(null, n)));
@@ -74,14 +74,11 @@ function checkGameOver() {
   }
 }
 
-onUpdate(() => {
-  if (simulation.alpha() < simulation.alphaMin()) return;
-
+const forwardSimulation = function(smoothness:number) {
   simulation.tick();
   const padding = 50;
   const w = width();
   const h = height();
-  const smoothness = 0.05;
 
   nodeInstances.forEach((obj, i) => {
     const simNode = simulationNodes[i];
@@ -103,6 +100,11 @@ onUpdate(() => {
     edgeObj.angle = Math.atan2(dy, dx) * (180 / Math.PI);
     edgeObj.width = Math.sqrt(dx * dx + dy * dy);
   });
+}
 
+onUpdate(() => {
+  if (simulation.alpha() < simulation.alphaMin()) return;
+
+  forwardSimulation(0.05)
   checkGameOver();
 });

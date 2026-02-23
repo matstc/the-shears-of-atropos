@@ -8,7 +8,7 @@ export const edgeFactory = (node1:GameObj, node2:GameObj, onRemove: (edge:GameOb
   const angle = Math.atan2(dy, dx) * (180 / Math.PI)
 
   const edge = add([
-    rect(distance, 10),
+    rect(distance, 30),
     pos(node1.pos.x, node1.pos.y),
     rotate(angle),
     anchor("left"),
