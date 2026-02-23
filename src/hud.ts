@@ -7,6 +7,7 @@ export function createHud(k: KAPLAYCtx<{}, never>) {
     text(`Go player 1`, { size: 24 }),
     pos(20, 20),
     color(PLAYER_COLORS[1]),
+    z(10),
     fixed(),
   ]);
 
@@ -14,6 +15,7 @@ export function createHud(k: KAPLAYCtx<{}, never>) {
     text(`P1: 0   P2: 0`, { size: 20 }),
     pos(20, 50),
     color(rgb(100, 100, 100)),
+    z(10),
     fixed(),
   ]);
 

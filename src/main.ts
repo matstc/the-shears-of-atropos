@@ -17,7 +17,7 @@ const scores:Scores = { 1: 0, 2: 0 };
 const misere = true;
 const hud = createHud(k)
 
-const { simulation, nodes: simulationNodes, edges: simulationEdges } = graphFactory(12, 20)
+const { simulation, nodes: simulationNodes, edges: simulationEdges } = graphFactory(7, 12)
 
 const onRemoveNode = (sNode:GraphNode, node:GameObj) => {
   const idx = simulationNodes.indexOf(sNode);
@@ -79,8 +79,16 @@ onUpdate(() => {
 
   simulation.tick();
 
+  const padding = 50;
+  const w = width();
+  const h = height();
+
   nodeInstances.forEach((obj, i) => {
     const simNode = simulationNodes[i];
+
+    simNode.x = Math.max(padding, Math.min(w - padding, simNode.x || 0));
+    simNode.y = Math.max(padding, Math.min(h - padding, simNode.y || 0));
+
     obj.pos.x = simNode.x!;
     obj.pos.y = simNode.y!;
   });
@@ -94,7 +102,6 @@ onUpdate(() => {
 
     edgeObj.pos = vec2(n1.pos.x, n1.pos.y);
     edgeObj.angle = Math.atan2(dy, dx) * (180 / Math.PI);
-
     edgeObj.width = Math.sqrt(dx * dx + dy * dy);
   });
 
