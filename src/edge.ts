@@ -24,6 +24,7 @@ export const edgeFactory = (node1: GameObj, node2: GameObj, onRemove: (edge: Gam
       node2,
       currentTween: null,
       active: false,
+      isDeleting: false,
       activate() {
         if (this.active) return;
 
@@ -57,14 +58,22 @@ export const edgeFactory = (node1: GameObj, node2: GameObj, onRemove: (edge: Gam
     },
   ])
 
-  edge.onClick(() => {
+  edge.onClick(async () => {
     if (!edge.active) return;
+    if (edge.isDeleting) return;
 
-    node1.removeEdge(edge)
-    node2.removeEdge(edge)
-    setCursor("default")
-    onRemove(edge)
-    edge.destroy()
+    edge.isDeleting = true;
+
+    if (isTouchscreen()) {
+      edge.activate();
+      await wait(0.2);
+    }
+
+    node1.removeEdge(edge);
+    node2.removeEdge(edge);
+    setCursor("default");
+    onRemove(edge);
+    edge.destroy();
   })
 
   node1.edges.push(edge)
