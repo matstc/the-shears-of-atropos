@@ -13,13 +13,15 @@ export function createGraph(
   screenWidth: number,
   screenHeight: number
 ): {
-  simulation: Simulation<GraphNodeWithPosition, undefined>;
-  nodes: GraphNodeWithPosition[];
-  edges: ExtendedEdge[];
+  simulation: Simulation<GraphNodeWithPosition, undefined>
+  nodes: GraphNodeWithPosition[]
+  edges: ExtendedEdge[]
+  onResize: Function
 } {
   const nodes: GraphNodeWithPosition[] = [];
   const edges: ExtendedEdge[] = [];
   const edgeSet = new Set<string>();
+  const distancePadding = 0.65;
 
   const cellSize = minWidthOrHeight / (n - 1 || 1);
   const cx = screenWidth / 2;
@@ -62,15 +64,29 @@ export function createGraph(
     }
   }
 
+  const linkForce = forceLink<GraphNodeWithPosition, ExtendedEdge>(edges)
+  .id(d => d.id)
+  .distance(cellSize * distancePadding)
+  .strength(0.8);
+
+  const manyBody = forceManyBody().strength(-cellSize);
+
   const simulation = forceSimulation<GraphNodeWithPosition>(nodes)
-    .force("link", forceLink<GraphNodeWithPosition, ExtendedEdge>(edges)
-      .id(d => d.id)
-      .distance(cellSize * 0.65)
-      .strength(0.8)
-    )
-    .force("charge", forceManyBody().strength(-cellSize))
-    .force("center", forceCenter(cx, cy))
+    .force("link", linkForce)
+    .force("charge", manyBody) // Use the variable here
+    .force("center", forceCenter(screenWidth / 2, screenHeight / 2))
     .stop();
 
-  return { simulation, nodes, edges };
+  return {
+    simulation,
+    nodes,
+    edges,
+    onResize: (newMinDimension: number, newCx: number, newCy: number) => {
+      const newCellSize = newMinDimension / (n - 1 || 1);
+      linkForce.distance(newCellSize * distancePadding);
+      manyBody.strength(-newCellSize);
+      simulation.force("center", forceCenter(newCx, newCy));
+      simulation.alpha(0.3).restart();
+    }
+  };
 }

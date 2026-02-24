@@ -1,9 +1,7 @@
 # Todos
 
-- Allow resizing
-- Fix chevrons on mobile
-- Why is an edge already white at the beginning on mobile?
 - Make it so that tapping once is enough
+- Why is an edge already white at the beginning on mobile?
 - How to teach?
 - Add music
 - Add settings to turn on/off music

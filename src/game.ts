@@ -15,10 +15,11 @@ export const createNewGame = async function(k: KAPLAYCtx<any, never>, boardDimen
   let currentPlayer:Player1OrPlayer2 = 1;
   const scores:Scores = { 1: 0, 2: 0 };
   const hud = await createHud(k, misere, vsCpu)
-  const minScreenDimension = Math.min(width(), height())
-  const xOffset = (width() - minScreenDimension) / 2;
-  const nodeRadius = Math.floor(minScreenDimension / boardDimension / (55 / boardDimension))
-  const { simulation, nodes: simulationNodes, edges: simulationEdges } = createGraph(boardDimension, minScreenDimension, width(), height())
+  let minScreenDimension = Math.min(width(), height())
+  let xOffset = (width() - minScreenDimension) / 2;
+  const getNodeRadius = () => Math.max(Math.floor(Math.min(width(), height()) / boardDimension / (55 / boardDimension)), 10);
+  let nodeRadius = getNodeRadius()
+  const { simulation, nodes: simulationNodes, edges: simulationEdges, onResize: simulationOnResize } = createGraph(boardDimension, minScreenDimension, width(), height())
   let isGameOver = false;
 
   const togglePause = () => {
@@ -86,7 +87,7 @@ export const createNewGame = async function(k: KAPLAYCtx<any, never>, boardDimen
     }
   };
 
-  const nodeInstances = simulationNodes.map(n => nodeFactory({ x: n.x! + xOffset, y: n.y!, nodeRadius, boardDimension, onRemove: onRemoveNode.bind(null, n), getCurrentColor: () => playerColors[currentPlayer] }));
+  const nodeInstances = simulationNodes.map(n => nodeFactory({ x: n.x!, y: n.y!, nodeRadius, boardDimension, onRemove: onRemoveNode.bind(null, n), getCurrentColor: () => playerColors[currentPlayer] }));
   const edgeInstances = simulationEdges.map(e => {
     const sIdx = (e.source as GraphNode).id;
     const tIdx = (e.target as GraphNode).id;
@@ -114,18 +115,17 @@ export const createNewGame = async function(k: KAPLAYCtx<any, never>, boardDimen
   const forwardSimulation = function(smoothness:number) {
     simulation.tick();
     const padding = 50;
-    const w = width();
-    const h = height();
 
     nodeInstances.forEach((obj, i) => {
       if (obj.isCaptured) return;
 
       const simNode = simulationNodes[i];
 
-      const targetX = (simNode.x || 0) + xOffset;
+      const targetX = simNode.x || 0;
       const targetY = simNode.y || 0;
 
-      obj.pos.x = lerp(obj.pos.x, Math.max(padding + xOffset, Math.min(width() - padding, targetX)), smoothness);
+      obj.radius = nodeRadius;
+      obj.pos.x = lerp(obj.pos.x, Math.max(padding, Math.min(width() - padding, targetX)), smoothness);
       obj.pos.y = lerp(obj.pos.y, Math.max(padding, Math.min(height() - padding, targetY)), smoothness);
     });
 
@@ -146,6 +146,12 @@ export const createNewGame = async function(k: KAPLAYCtx<any, never>, boardDimen
   return {
     onResize: () => {
       hud.onResize()
+      const newMin = Math.min(k.width(), k.height());
+      xOffset = (k.width() - newMin) / 2;
+      nodeRadius = getNodeRadius(); // will be used by forwardSimulation
+      const cx = k.width() / 2;
+      const cy = k.height() / 2;
+      simulationOnResize(newMin, cx, cy);
     },
     onUpdate: () => {
       if (isPaused) return;
