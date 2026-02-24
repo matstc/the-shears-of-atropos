@@ -23,6 +23,25 @@ export const createNewGame = function(k: KAPLAYCtx<any, never>, boardDimension:n
 
     const objIdx = nodeInstances.indexOf(node);
     if (objIdx > -1) nodeInstances.splice(objIdx, 1);
+
+    const targetX = currentPlayer === 1 ? 0 : k.width();
+    const targetY = k.height();
+
+    // Remove the "node" tag so it's no longer interactive during flight
+    node.unuse("node");
+    const duration = 1
+    k.tween(
+      node.pos,
+      k.vec2(targetX, targetY),
+      duration,
+      (val) => node.pos = val,
+      k.easings.easeInCubic
+    ).onEnd(() => {
+      node.destroy();
+    });
+
+    k.tween(1, 0.3, duration, (val) => node.opacity = val, k.easings.easeInQuart);
+    k.tween(node.radius, node.radius * 1.5, duration, (val) => node.radius = val, k.easings.easeInQuart);
   }
 
   const onRemoveEdge = (sEdge: ExtendedEdge, edge: GameObj) => {
@@ -32,12 +51,11 @@ export const createNewGame = function(k: KAPLAYCtx<any, never>, boardDimension:n
     if (objIdx > -1) edgeInstances.splice(objIdx, 1);
 
     let nodesCaptured = 0;
-    if (!edge.node1.exists()) nodesCaptured++;
-    if (!edge.node2.exists()) nodesCaptured++;
+    if (edge.node1.isCaptured) nodesCaptured++;
+    if (edge.node2.isCaptured) nodesCaptured++;
 
     if (nodesCaptured > 0) {
       scores[currentPlayer] += nodesCaptured;
-      shake(5);
     } else {
       currentPlayer = currentPlayer === 1 ? 2 : 1;
     }
@@ -78,6 +96,8 @@ export const createNewGame = function(k: KAPLAYCtx<any, never>, boardDimension:n
     const h = height();
 
     nodeInstances.forEach((obj, i) => {
+      if (obj.isCaptured) return;
+
       const simNode = simulationNodes[i];
 
       const targetX = (simNode.x || 0) + xOffset;

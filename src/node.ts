@@ -19,7 +19,7 @@ export const nodeFactory = (opt: NodeOpt): GameObj => {
   const node = add([
     circle(opt.nodeRadius, { fill: false }),
     pos(x, y),
-    outline(2, Color.fromHex(nodeColor)),
+    outline(1, Color.fromHex(nodeColor)),
     anchor("center"),
     z(5),
     area(),
@@ -27,12 +27,13 @@ export const nodeFactory = (opt: NodeOpt): GameObj => {
     "shape",
     "node",
     {
+      isCaptured: false,
       edges: [] as GameObj[],
       removeEdge(this: any, edge: GameObj) {
         this.edges = this.edges.filter((x:GameObj) => x !== edge)
         if (this.edges.length === 0) {
+          this.isCaptured = true;
           onRemove(node)
-          node.destroy()
         }
       }
     }
