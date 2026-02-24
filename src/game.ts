@@ -9,6 +9,7 @@ import { ExtendedEdge, GraphNode, Player1OrPlayer2, Scores } from "./types";
 
 export const createNewGame = function(k: KAPLAYCtx<any, never>, boardDimension:number, misere:boolean, vsCpu:boolean) {
   addBackground(k)
+  k.play("start-game", { volume: 1 })
   let currentPlayer:Player1OrPlayer2 = 1;
   const scores:Scores = { 1: 0, 2: 0 };
   const hud = createHud(k, misere)
@@ -46,6 +47,8 @@ export const createNewGame = function(k: KAPLAYCtx<any, never>, boardDimension:n
   }
 
   const onRemoveEdge = (sEdge: ExtendedEdge, edge: GameObj) => {
+    k.play("select", { volume: 1 })
+
     const idx = simulationEdges.indexOf(sEdge);
     if (idx > -1) simulationEdges.splice(idx, 1);
     const objIdx = edgeInstances.indexOf(edge);
@@ -76,9 +79,10 @@ export const createNewGame = function(k: KAPLAYCtx<any, never>, boardDimension:n
     return edgeFactory(nodeInstances[sIdx], nodeInstances[tIdx], nodeRadius, onRemoveEdge.bind(null, e), () => playerColors[currentPlayer]);
   });
 
-  function checkGameOver() {
+  async function checkGameOver() {
     if (edgeInstances.length === 0) {
       isGameOver = true;
+
       let winner:Player1OrPlayer2|null;
       if (misere) {
         winner = scores[1] < scores[2] ? 1 : 2;
@@ -87,6 +91,7 @@ export const createNewGame = function(k: KAPLAYCtx<any, never>, boardDimension:n
         winner = scores[1] > scores[2] ? 1 : 2;
       }
 
+      await wait(1)
       hud.showGameOver(winner)
     }
   }
@@ -124,7 +129,7 @@ export const createNewGame = function(k: KAPLAYCtx<any, never>, boardDimension:n
   return {
     onUpdate: () => {
       if (isGameOver) return;
-      
+
       const edges = get("edge").filter(e => e.hovering);
       const nodes = get("node").filter(e => e.hovering);
 

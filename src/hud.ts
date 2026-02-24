@@ -70,10 +70,12 @@ export function createHud(k: KAPLAYCtx<any, never>, misere: boolean) {
       p2ScoreLabel.text = `${scores[2]}`;
     },
     showGameOver: (winner:Player1OrPlayer2|null) => {
+      k.play("game-over", { volume: 0.9 })
+
       uiLabel.text = "GAME OVER"
       uiLabel.color = Color.fromHex(menuTextColor)
       const string = winner === null ? "DRAW" : `Player ${winner} won`
-      const explanation = misere ? "by collecting as few lives as possible" : "by collecting as many lives as possible"
+      const explanation = misere ? "by collecting the least lives" : "by collecting the most lives"
 
       add([
         text(string, { font: "AdventProRegular", size: 47 }),

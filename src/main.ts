@@ -11,6 +11,9 @@ const k = kaplay({
 k.loadRoot("./");
 k.loadFont("AdventProRegular", "fonts/AdventPro-Regular.ttf");
 k.loadFont("AdventProBold", "fonts/AdventPro-Bold.ttf");
+k.loadSound("start-game", "sounds/start-game.wav");
+k.loadSound("game-over", "sounds/game-over.wav");
+k.loadSound("select", "sounds/select.wav");
 
 k.scene("menu", () => {
   createMenu(k, (dimension, misere, vsCpu) => {
