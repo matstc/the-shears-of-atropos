@@ -6,12 +6,19 @@ export function createHud(k: KAPLAYCtx<any, never>, misere: boolean, vsCpu:boole
   const margin = 40;
 
   const uiLabel = k.add([
-    text(`GO PLAYER 1`, { font: "AdventProBold", size: 32 }),
-    pos(k.width() / 2, margin),
+    text(`GO PLAYER 1`, { font: "AdventProBold", size: 64 }),
+    pos(width() / 2, height() / 2),
     anchor("center"),
     color(k.Color.fromHex(playerColors[1])),
     fixed(),
+    z(10),
+    opacity(0)
   ]);
+
+  tween(0, 1, 0.7, (v) => uiLabel.opacity = v, k.easings.easeInOutExpo).onEnd(() => {
+    tween(uiLabel.pos, vec2(uiLabel.pos.x, margin), 0.8, (v) => uiLabel.pos = v, k.easings.easeInOutExpo);
+    tween(64, 32, 0.8, (v) => uiLabel.textSize = v, k.easings.easeInOutExpo);
+  });
 
   const createScoreBadge = (player: Player1OrPlayer2, xPos: number, anchorPoint: string) => {
     const container = k.add([
