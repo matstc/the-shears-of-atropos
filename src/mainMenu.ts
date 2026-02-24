@@ -114,11 +114,19 @@ export function createMenu(k: KAPLAYCtx<any, never>, onStart:(dimension:number, 
 
     const updateUI = () => {
       const value = getValue();
+      valueText.opacity = 0;
       valueText.text = value;
       let xOffset = value.length >= 3 ? 33 : value.length == 2 ? 39 : 44;
-      if (value.indexOf("1") > -1) xOffset += 3
+      if (value.indexOf("1") > -1) xOffset += 3;
+      valueText.pos.x = valueStartX + xOffset;
 
-      valueText.pos.x = valueStartX + xOffset
+      k.tween(
+        0,
+        1,
+        0.15,
+        (v) => valueText.opacity = v,
+        k.easings.easeOutQuad
+      );
     };
 
     prevBtn.onClick(() => { playRandomSound(k, "select"); onPrev(); updateUI(); });
