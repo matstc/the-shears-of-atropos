@@ -50,7 +50,7 @@ export function createMenu(k: KAPLAYCtx<any, never>, onStart:(dimension:number, 
       anchor("center"),
       pos(valueStartX - 10, 12),
       color(textColor),
-      area({ shape: new Rect(vec2(-3, -1), 40, 38) }),
+      area({ shape: new Rect(vec2(10, 0), 60, 60) }),
     ]);
 
     const value = getValue()
@@ -71,7 +71,7 @@ export function createMenu(k: KAPLAYCtx<any, never>, onStart:(dimension:number, 
       anchor("center"),
       pos(valueStartX + 90, 12),
       color(textColor),
-      area({ shape: new Rect(vec2(-3, -1), 40, 38) }),
+      area({ shape: new Rect(vec2(10, 0), 60, 60) }),
     ]);
 
     row.add([
