@@ -88,6 +88,19 @@ export function createHud(k: KAPLAYCtx<any, never>, misere: boolean) {
         anchor("center"),
         fixed(),
       ]);
+
+      const backToMenuButton = add([
+        text("← Back to menu", { size: 24 }),
+        pos(width() / 2, height() / 2 + 60),
+        color(Color.fromHex(edgeColor)),
+        anchor("center"),
+        area(),
+        fixed(),
+      ]);
+
+      backToMenuButton.onHover(() => setCursor("pointer"))
+      backToMenuButton.onHoverEnd(() => setCursor("default"))
+      backToMenuButton.onClick(() => k.go("menu"))
     }
   };
 }

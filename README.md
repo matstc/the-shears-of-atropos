@@ -1,7 +1,9 @@
 # Todos
 
-- Allow changing parameters
-- Allow restarting after game is over
+- Improve looks of menu
+- Create pause menu during game (menu item: Resume / Back to menu)
+- Improve looks of misere badge
+- Add settings to turn on/off music
 - Add better AI
 - Add SFX
 - Make more usable on mobile
