@@ -2,6 +2,8 @@
 
 - Add better AI (and setting?)
 
+![](screenshot.png)
+
 # Folder structure
 
 - `src` - source code for your kaplay project
