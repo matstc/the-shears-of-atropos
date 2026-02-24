@@ -3,7 +3,7 @@ import { nodeFactory } from "./node";
 import { edgeFactory } from "./edge";
 import { dotsAndBoxesFactory } from "./graph";
 import { GraphEdge, GraphNode, Player1OrPlayer2, Scores } from "./types";
-import { backgroundColor, PLAYER_COLORS } from "./styles";
+import { backgroundColor, playerColors } from "./styles";
 import { createHud } from "./hud";
 import { makeRandomMoveForCpu } from "./ai";
 
@@ -19,7 +19,7 @@ const scores:Scores = { 1: 0, 2: 0 };
 const misere = false;
 const vsCPU = true;
 const hud = createHud(k, misere)
-const boardDimension = 4
+const boardDimension = 2
 const minScreenDimension = Math.min(width(), height())
 const xOffset = (width() - minScreenDimension) / 2;
 const { simulation, nodes: simulationNodes, edges: simulationEdges } = dotsAndBoxesFactory(boardDimension, minScreenDimension, minScreenDimension)
@@ -61,25 +61,20 @@ const nodeInstances = simulationNodes.map(n => nodeFactory({ x: n.x! + xOffset, 
 const edgeInstances = simulationEdges.map(e => {
   const sIdx = (e.source as GraphNode).id;
   const tIdx = (e.target as GraphNode).id;
-  return edgeFactory(nodeInstances[sIdx], nodeInstances[tIdx], onRemoveEdge.bind(null, e), () => PLAYER_COLORS[currentPlayer]);
+  return edgeFactory(nodeInstances[sIdx], nodeInstances[tIdx], onRemoveEdge.bind(null, e), () => playerColors[currentPlayer]);
 });
 
 function checkGameOver() {
   if (edgeInstances.length === 0) {
-    let winner;
+    let winner:Player1OrPlayer2|null;
     if (misere) {
-      winner = scores[1] < scores[2] ? "Player 1" : "Player 2";
-      if (scores[1] === scores[2]) winner = "Draw";
+      winner = scores[1] < scores[2] ? 1 : 2;
+      if (scores[1] === scores[2]) winner = null;
     } else {
-      winner = scores[1] > scores[2] ? "Player 1" : "Player 2";
+      winner = scores[1] > scores[2] ? 1 : 2;
     }
 
-    add([
-      text(`Game Over: ${winner} wins`, { size: 48 }),
-      pos(width() / 2, height() / 2),
-      anchor("center"),
-      fixed(),
-    ]);
+    hud.showGameOver(winner)
   }
 }
 
