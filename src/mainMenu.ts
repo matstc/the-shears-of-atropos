@@ -12,9 +12,10 @@ export function createMenu(k: KAPLAYCtx<any, never>, onStart:(dimension:number, 
   k.play("start-game", { volume: 0 })
   const textColor = Color.fromHex(menuTextColor)
   const yGap = 85;
+  const getTitleSize = () => width() < 420 ? 40 : width() < 1024 ? 48 : 64
 
-  add([
-    text("The Shears of Atropos", { font: "AdventProBold", size: width() < 420 ? 40 : 48 }),
+  const title = add([
+    text("The Shears of Atropos", { font: "AdventProBold", size: getTitleSize() }),
     pos(k.width() / 2, 80),
     anchor("center"),
     color(textColor),
@@ -120,26 +121,32 @@ export function createMenu(k: KAPLAYCtx<any, never>, onStart:(dimension:number, 
   () => isMisere = !isMisere
   );
 
-const startBtn = menu.add([
-  text("Start Game", { font: "AdventProRegular", size: 32 }),
-  pos(menuXOffset, yGap * 5),
-  anchor("center"),
-  color(textColor),
-  area()
-]);
+  const startBtn = menu.add([
+    text("Start Game", { font: "AdventProRegular", size: 32 }),
+    pos(menuXOffset, yGap * 5),
+    anchor("center"),
+    color(textColor),
+    area()
+  ]);
 
-startBtn.onClick(() => {
-  onStart(Math.floor(Math.sqrt(dimension)), isMisere, vsCpu)
-});
+  startBtn.onClick(() => {
+    onStart(Math.floor(Math.sqrt(dimension)), isMisere, vsCpu)
+  });
 
-[startBtn].forEach(btn => {
-  btn.onHoverUpdate(() => {
-    btn.color = BLACK;
-    setCursor("pointer");
+  [startBtn].forEach(btn => {
+    btn.onHoverUpdate(() => {
+      btn.color = BLACK;
+      setCursor("pointer");
+    });
+    btn.onHoverEnd(() => {
+      btn.color = textColor;
+      setCursor("default");
+    });
   });
-  btn.onHoverEnd(() => {
-    btn.color = textColor;
-    setCursor("default");
-  });
-});
+
+  return {
+    onResize: () => {
+      title.size = getTitleSize()
+    }
+  }
 }
