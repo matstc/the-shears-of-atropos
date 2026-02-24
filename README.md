@@ -1,13 +1,9 @@
 # Todos
 
-- Make it so that tapping once is enough
-- Why is an edge already white at the beginning on mobile?
 - How to teach?
 - Add music
 - Add settings to turn on/off music
 - Add better AI (and setting?)
-- Improve SFX
-- Make more usable on mobile
 
 # Folder structure
 
