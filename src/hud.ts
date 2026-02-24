@@ -2,7 +2,7 @@ import { GameObj, KAPLAYCtx } from "kaplay";
 import { lightenHex, menuTextColor, playerColors, playerTextColors } from "./styles";
 import { Player1OrPlayer2, Scores } from "./types";
 
-export function createHud(k: KAPLAYCtx<any, never>, misere: boolean) {
+export function createHud(k: KAPLAYCtx<any, never>, misere: boolean, vsCpu:boolean) {
   const margin = 40;
 
   const uiLabel = k.add([
@@ -21,8 +21,9 @@ export function createHud(k: KAPLAYCtx<any, never>, misere: boolean) {
       z(10),
     ]);
 
+    const label = vsCpu && player == 2 ? "CPU" : `P${player}`
     container.add([
-      text(`P${player}`, { font: "AdventProRegular", size: 24 }),
+      text(label, { font: "AdventProRegular", size: 24 }),
       anchor("center"),
       pos(player == 1 ? -10 : 10, -20),
       color(Color.fromHex(playerTextColors[player])),

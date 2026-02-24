@@ -14,7 +14,7 @@ export const createNewGame = function(k: KAPLAYCtx<any, never>, boardDimension:n
   let destroyPauseMenu: (() => void) | null = null;
   let currentPlayer:Player1OrPlayer2 = 1;
   const scores:Scores = { 1: 0, 2: 0 };
-  const hud = createHud(k, misere)
+  const hud = createHud(k, misere, vsCpu)
   const minScreenDimension = Math.min(width(), height())
   const xOffset = (width() - minScreenDimension) / 2;
   const nodeRadius = Math.floor(minScreenDimension / boardDimension / (55 / boardDimension))

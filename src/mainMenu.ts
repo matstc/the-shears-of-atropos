@@ -11,7 +11,7 @@ export function createMenu(k: KAPLAYCtx<any, never>, onStart:(dimension:number, 
   addBackground(k)
   k.play("start-game", { volume: 0 })
   const textColor = Color.fromHex(menuTextColor)
-  const yGap = 80;
+  const yGap = 85;
 
   add([
     text("The Shears of Atropos", { font: "AdventProBold", size: 48 }),
@@ -28,7 +28,7 @@ export function createMenu(k: KAPLAYCtx<any, never>, onStart:(dimension:number, 
 
   const addMenuRow = (y: number, label: string, description: string, getValue: () => string, onPrev: () => void, onNext: () => void) => {
     const row = menu.add([k.pos(0, y)]);
-    const valueStartX = 278;
+    const valueStartX = 290;
 
     row.add([
       text(label, { font: "AdventProRegular", size: 24 }),
@@ -38,9 +38,10 @@ export function createMenu(k: KAPLAYCtx<any, never>, onStart:(dimension:number, 
 
     const prevBtn = row.add([
       text("🢐", { size: 64 }),
-      pos(valueStartX, -18),
+      anchor("center"),
+      pos(valueStartX, 15),
       color(textColor),
-      area(),
+      area({ shape: new Rect(vec2(-3, -1), 40, 38) }),
     ]);
 
     const value = getValue()
@@ -54,9 +55,10 @@ export function createMenu(k: KAPLAYCtx<any, never>, onStart:(dimension:number, 
 
     const nextBtn = row.add([
       text("🢒", { size: 64 }),
-      pos(valueStartX + 100, -18),
+      anchor("center"),
+      pos(valueStartX + 100, 15),
       color(textColor),
-      area(),
+      area({ shape: new Rect(vec2(-3, -1), 40, 38) }),
     ]);
 
     row.add([
@@ -68,8 +70,8 @@ export function createMenu(k: KAPLAYCtx<any, never>, onStart:(dimension:number, 
     const updateUI = () => {
       const value = getValue();
       valueText.text = value;
-      let xOffset = value.length >= 3 ? 45 : value.length == 2 ? 50 : 56;
-      if (value.indexOf("1") > -1) xOffset += 4
+      let xOffset = value.length >= 3 ? 33 : value.length == 2 ? 39 : 44;
+      if (value.indexOf("1") > -1) xOffset += 3
 
       valueText.pos.x = valueStartX + xOffset
     };

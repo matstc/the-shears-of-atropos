@@ -1,5 +1,6 @@
 # Todos
 
+- Experiment with red as P2 color
 - How to teach?
 - Add music
 - Add settings to turn on/off music
