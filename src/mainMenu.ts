@@ -12,19 +12,51 @@ export function createMenu(k: KAPLAYCtx<any, never>, onStart:(dimension:number, 
   k.play("game-start", { volume: 0 })
   const textColor = Color.fromHex(menuTextColor)
   const yGap = 85;
-  const getTitleSize = () => width() < 420 ? 40 : width() < 1024 ? 48 : 64
+  const getTitleSize = () => width() < 420 ? 37 : width() < 1024 ? 41 : 64
+  const threadColors = [WHITE, Color.fromHex("#eeeeee"), Color.fromHex("#f1f1f1")]
+  if (width() > 1024) {
+    for (let i = 0; i < 5; i++) {
+      let x = Math.random() * width() / 4;
+
+      add([
+        rect(1, height()),
+        pos(x, 0),
+        color(threadColors[Math.floor(Math.random() * 3)])
+      ])
+    }
+  }
 
   const title = add([
-    text("The Shears of Atropos", { font: "AdventProBold", size: getTitleSize() }),
-    pos(k.width() / 2, 80),
+    text("THE SHEARS OF ATROPOS", { font: "AdventProBlack", size: getTitleSize() }),
+    pos(k.width() / 2, width() < 1024 ? 80 : 120),
     anchor("center"),
     color(textColor),
     fixed(),
   ]);
 
+  const helpTextLines = [
+    "Collect lives by cutting the connecting threads.",
+    "One cut at a time. After collecting a life, cut again."
+  ]
+
   const menuXOffset = Math.min(200, width() / 2 - 6)
+
+  const lineContainer = add([
+    pos(k.width() / 2 - menuXOffset, width() < 1024 ? 60 : 90),
+    fixed()
+  ])
+
+  helpTextLines.map((line, i) => {
+    lineContainer.add([
+      text(line, { font: "AdventProRegular", size: 20 }),
+      pos(0, lineContainer.pos.y + i * 25),
+      color(lightenHex(menuTextColor, 30)),
+      fixed()
+    ])
+  })
+
   const menu = add([
-    pos(k.width() / 2 - menuXOffset, k.height() / 4),
+    pos(k.width() / 2 - menuXOffset,  width() < 1024 ? Math.max(k.height() / 4, 220) : k.height() / 3),
     fixed(),
   ]);
 
@@ -111,7 +143,7 @@ export function createMenu(k: KAPLAYCtx<any, never>, onStart:(dimension:number, 
     () => { let index = dimensions.indexOf(dimension); index += 1; if (index >= dimensions.length) { index = 0 }; dimension = dimensions[index] },
   );
 
-  addMenuRow(yGap, "Versus CPU", "Against CPU or another player", () => vsCpu ? "CPU" : "P2",
+  addMenuRow(yGap, "Versus", "Against CPU or another player", () => vsCpu ? "CPU" : "P2",
   () => vsCpu = !vsCpu,
   () => vsCpu = !vsCpu
   );
@@ -123,7 +155,7 @@ export function createMenu(k: KAPLAYCtx<any, never>, onStart:(dimension:number, 
 
   const startBtn = menu.add([
     text("Start Game", { font: "AdventProRegular", size: 32 }),
-    pos(menuXOffset, yGap * 5),
+    pos(menuXOffset, yGap * 4.5),
     anchor("center"),
     color(textColor),
     area()

@@ -11,6 +11,7 @@ const k = kaplay({
 k.loadRoot("./");
 k.loadFont("AdventProRegular", "fonts/AdventPro-Regular.ttf");
 k.loadFont("AdventProBold", "fonts/AdventPro-Bold.ttf");
+k.loadFont("AdventProBlack", "fonts/AdventPro-Black.ttf");
 k.loadSound("game-start", "sounds/game-start.mp3");
 k.loadSound("game-over", "sounds/game-over.mp3");
 k.loadSound("select1", "sounds/select1.mp3");

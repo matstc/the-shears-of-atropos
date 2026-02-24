@@ -1,6 +1,5 @@
 # Todos
 
-- How to teach?
 - Add better AI (and setting?)
 
 # Folder structure
