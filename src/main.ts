@@ -21,6 +21,7 @@ const vsCPU = true;
 const hud = createHud(k, misere)
 const boardDimension = 4
 const minScreenDimension = Math.min(width(), height())
+const xOffset = (width() - minScreenDimension) / 2;
 const { simulation, nodes: simulationNodes, edges: simulationEdges } = dotsAndBoxesFactory(boardDimension, minScreenDimension, minScreenDimension)
 
 const onRemoveNode = (sNode:GraphNode, node:GameObj) => {
@@ -56,7 +57,7 @@ const onRemoveEdge = (sEdge: GraphEdge, edge: GameObj) => {
   }
 };
 
-const nodeInstances = simulationNodes.map(n => nodeFactory({ x: n.x!, y: n.y!, boardDimension, screenDimension: minScreenDimension, onRemove: onRemoveNode.bind(null, n) }));
+const nodeInstances = simulationNodes.map(n => nodeFactory({ x: n.x! + xOffset, y: n.y!, boardDimension, screenDimension: minScreenDimension, onRemove: onRemoveNode.bind(null, n) }));
 const edgeInstances = simulationEdges.map(e => {
   const sIdx = (e.source as GraphNode).id;
   const tIdx = (e.target as GraphNode).id;
@@ -91,11 +92,11 @@ const forwardSimulation = function(smoothness:number) {
   nodeInstances.forEach((obj, i) => {
     const simNode = simulationNodes[i];
 
-    simNode.x = Math.max(padding, Math.min(w - padding, simNode.x || 0));
-    simNode.y = Math.max(padding, Math.min(h - padding, simNode.y || 0));
+    const targetX = (simNode.x || 0) + xOffset;
+    const targetY = simNode.y || 0;
 
-    obj.pos.x = lerp(obj.pos.x, simNode.x, smoothness);
-    obj.pos.y = lerp(obj.pos.y, simNode.y, smoothness);
+    obj.pos.x = lerp(obj.pos.x, Math.max(padding + xOffset, Math.min(width() - padding, targetX)), smoothness);
+    obj.pos.y = lerp(obj.pos.y, Math.max(padding, Math.min(height() - padding, targetY)), smoothness);
   });
 
   edgeInstances.forEach((edgeObj) => {
