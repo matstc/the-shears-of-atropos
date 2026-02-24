@@ -1,16 +1,15 @@
 import { KAPLAYCtx } from "kaplay";
-import { edgeColor, playerBackgrounds, playerColors as playerColors } from "./styles";
+import { edgeColor, playerBackgrounds, playerColors as playerColors, playerTextColors } from "./styles";
 import { Player1OrPlayer2, Scores } from "./types";
 
 export function createHud(k: KAPLAYCtx<any, never>, misere: boolean) {
   const margin = 40;
 
   const uiLabel = k.add([
-    k.text(`GO PLAYER 1`, { size: 32 }),
+    k.text(`GO PLAYER 1`, { font: "AdventProRegular", size: 32 }),
     k.pos(k.width() / 2, margin),
     k.anchor("center"),
     k.color(k.Color.fromHex(playerColors[1])),
-    k.z(10),
     k.fixed(),
   ]);
 
@@ -23,23 +22,17 @@ export function createHud(k: KAPLAYCtx<any, never>, misere: boolean) {
     ]);
 
     container.add([
-      k.circle(45),
-      k.color(Color.fromHex(playerBackgrounds[player])),
+      k.text(`P${player}`, { font: "AdventProRegular", size: 20 }),
       k.anchor("center"),
-    ]);
-
-    container.add([
-      k.text(`P${player}`, { size: 20 }),
-      k.anchor("center"),
-      k.pos(0, -15),
-      k.color(Color.fromHex(playerColors[player])),
+      k.pos(player == 1 ? -10 : 10, -15),
+      k.color(Color.fromHex(playerTextColors[player])),
     ]);
 
     const scoreLabel = container.add([
-      k.text("0", { size: 20 }),
+      k.text("0", { font: "AdventProRegular", size: 20 }),
       k.anchor("center"),
-      k.pos(0, +15),
-      k.color(Color.fromHex(playerColors[player])),
+      k.pos(player == 1 ? -10 : 10, +15),
+      k.color(Color.fromHex(playerTextColors[player])),
     ]);
 
     return scoreLabel;
@@ -59,7 +52,7 @@ export function createHud(k: KAPLAYCtx<any, never>, misere: boolean) {
     ]);
 
     k.add([
-      k.text("MISERE", { size: 12, font: "sans-serif" }),
+      k.text("MISERE", { font: "AdventProRegular", size: 12 }),
       k.pos(k.width() / 2, margin + 45),
       k.anchor("center"),
       k.color(255, 255, 255),
@@ -82,7 +75,7 @@ export function createHud(k: KAPLAYCtx<any, never>, misere: boolean) {
       const string = winner === null ? "DRAW" : `Player ${winner} wins`
 
       add([
-        text(string, { size: 48 }),
+        text(string, { font: "AdventProRegular", size: 47 }),
         pos(width() / 2, height() / 2),
         color(winner ? Color.fromHex(playerColors[winner]) : Color.fromHex(edgeColor)),
         anchor("center"),
@@ -90,7 +83,7 @@ export function createHud(k: KAPLAYCtx<any, never>, misere: boolean) {
       ]);
 
       const backToMenuButton = add([
-        text("← Back to menu", { size: 24 }),
+        text("← Back to menu", { font: "AdventProRegular", size: 24 }),
         pos(width() / 2, height() / 2 + 60),
         color(Color.fromHex(edgeColor)),
         anchor("center"),

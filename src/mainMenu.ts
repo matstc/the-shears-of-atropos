@@ -1,52 +1,76 @@
 import { KAPLAYCtx } from "kaplay";
+import "kaplay/global"
+import { addBackground, lightenHex, menuTextColor } from "./styles";
 
-let dimension = 4;
+const dimensions = [4, 9, 16, 25, 36]
+let dimension = 16;
 let isMisere = false;
 let vsCpu = true;
 
 export function createMenu(k: KAPLAYCtx<any, never>, onStart:(dimension:number, misere:boolean, vsCpu:boolean) => void) {
-  k.add([
-    k.text("The Shears of Atropos", { size: 48 }),
-    k.pos(k.width() / 2, 80),
-    k.anchor("center"),
-    k.fixed(),
+  addBackground(k)
+  const textColor = Color.fromHex(menuTextColor)
+  const yGap = 80;
+
+  add([
+    text("The Shears of Atropos", { font: "AdventProBold", size: 48 }),
+    pos(k.width() / 2, 80),
+    anchor("center"),
+    color(textColor),
+    fixed(),
   ]);
 
-  const menu = k.add([
-    k.pos(k.width() / 2 - 160, k.height() / 2 - 100),
-    k.fixed(),
+  const menu = add([
+    pos(k.width() / 2 - 200, k.height() / 4),
+    fixed(),
   ]);
 
-  const addMenuRow = (y: number, label: string, getValue: () => string, onPrev: () => void, onNext: () => void) => {
+  const addMenuRow = (y: number, label: string, description: string, getValue: () => string, onPrev: () => void, onNext: () => void) => {
     const row = menu.add([k.pos(0, y)]);
+    const valueStartX = 278;
 
-    const labelText = row.add([
-      k.text(`${label}:`, { size: 24 }),
-      k.pos(0, 0)
+    row.add([
+      text(label, { font: "AdventProRegular", size: 24 }),
+      color(textColor),
+      pos(0, 0)
     ]);
-
-    const valueStartX = 200;
 
     const prevBtn = row.add([
-      k.text("<", { size: 24 }),
-      k.pos(valueStartX, 0),
-      k.area(),
+      text("🢐", { size: 64 }),
+      pos(valueStartX, -18),
+      color(textColor),
+      area(),
     ]);
 
+    const value = getValue()
+
     const valueText = row.add([
-      k.text(getValue(), { size: 24 }),
-      k.pos(valueStartX + 40, 0),
-      k.anchor("topleft")
+      text(value, { font: "AdventProRegular", size: 24 }),
+      pos(valueStartX, 0),
+      color(textColor),
+      anchor("topleft")
     ]);
 
     const nextBtn = row.add([
-      k.text(">", { size: 24 }),
-      k.pos(valueStartX + 100, 0),
-      k.area(),
+      text("🢒", { size: 64 }),
+      pos(valueStartX + 100, -18),
+      color(textColor),
+      area(),
     ]);
 
+    row.add([
+      text(description, { font: "AdventProRegular", size: 16 }),
+      pos(0, 30),
+      color(lightenHex(menuTextColor, 30))
+    ])
+
     const updateUI = () => {
-      valueText.text = getValue();
+      const value = getValue();
+      valueText.text = value;
+      let xOffset = value.length >= 3 ? 45 : value.length == 2 ? 50 : 56;
+      if (value.indexOf("1") > -1) xOffset += 4
+
+      valueText.pos.x = valueStartX + xOffset
     };
 
     prevBtn.onClick(() => { onPrev(); updateUI(); });
@@ -54,59 +78,53 @@ export function createMenu(k: KAPLAYCtx<any, never>, onStart:(dimension:number, 
 
     [prevBtn, nextBtn].forEach(btn => {
       btn.onHoverUpdate(() => {
-        btn.color = k.rgb(255, 255, 255);
-        k.setCursor("pointer");
+        btn.color = BLACK;
+        setCursor("pointer");
       });
       btn.onHoverEnd(() => {
-        btn.color = k.rgb(180, 180, 180);
-        k.setCursor("default");
+        btn.color = textColor;
+        setCursor("default");
       });
     });
 
     updateUI();
   };
 
-  addMenuRow(0, "Dimension", () => dimension.toString(),
-  () => { if (dimension > 2) dimension--; },
-  () => { if (dimension < 7) dimension++; }
-);
+  addMenuRow(0, "Size of humanity", "Total lives to collect", () => dimension.toString(),
+    () => { let index = dimensions.indexOf(dimension); index -= 1; if (index < 0) { index = dimensions.length - 1 }; dimension = dimensions[index] },
+    () => { let index = dimensions.indexOf(dimension); index += 1; if (index >= dimensions.length) { index = 0 }; dimension = dimensions[index] },
+  );
 
-addMenuRow(50, "Misere play", () => isMisere ? "YES" : "NO",
-() => isMisere = !isMisere,
-() => isMisere = !isMisere
-);
+  addMenuRow(yGap, "Versus CPU", "Against CPU or another player", () => vsCpu ? "YES" : "NO",
+  () => vsCpu = !vsCpu,
+  () => vsCpu = !vsCpu
+  );
 
-addMenuRow(100, "Versus CPU", () => vsCpu ? "YES" : "NO",
-() => vsCpu = !vsCpu,
-() => vsCpu = !vsCpu
-);
+  addMenuRow(yGap * 2, "Misere", "Collect as few lives as possible", () => isMisere ? "YES" : "NO",
+  () => isMisere = !isMisere,
+  () => isMisere = !isMisere
+  );
 
-const settingsBtn = menu.add([
-  k.text("Settings", { size: 24 }),
-  k.pos(0, 150),
-  k.area(),
-  k.color(180, 180, 180),
-]);
 
 const startBtn = menu.add([
-  k.text("Start Game", { size: 32 }),
-  k.pos(0, 220),
-  k.area(),
-  k.color(100, 255, 100),
+  text("Start Game", { font: "AdventProRegular", size: 32 }),
+  color(textColor),
+  pos(140, yGap * 4),
+  area()
 ]);
 
 startBtn.onClick(() => {
-  onStart(dimension, isMisere, vsCpu)
+  onStart(Math.floor(Math.sqrt(parseInt(dimension, 10))), isMisere, vsCpu)
 });
 
-[settingsBtn, startBtn].forEach(btn => {
+[startBtn].forEach(btn => {
   btn.onHoverUpdate(() => {
-    btn.scale = k.vec2(1.05);
-    k.setCursor("pointer");
+    btn.color = BLACK;
+    setCursor("pointer");
   });
   btn.onHoverEnd(() => {
-    btn.scale = k.vec2(1);
-    k.setCursor("default");
+    btn.color = textColor;
+    setCursor("default");
   });
 });
 }

@@ -3,15 +3,15 @@ import "kaplay/global"
 import { hoverable } from "./hoverable"
 import { edgeColor } from "./styles"
 
-export const edgeFactory = (node1: GameObj, node2: GameObj, onRemove: (edge: GameObj) => void, getCurrentColor: Function): GameObj => {
+export const edgeFactory = (node1: GameObj, node2: GameObj, nodeRadius: number, onRemove: (edge: GameObj) => void, getCurrentColor: Function): GameObj => {
   const dx = node2.pos.x - node1.pos.x
   const dy = node2.pos.y - node1.pos.y
-  const distance = Math.sqrt(dx * dx + dy * dy)
+  const distance = Math.sqrt(dx * dx + dy * dy) - 2 * nodeRadius
   const angle = Math.atan2(dy, dx) * (180 / Math.PI)
   const animDuration = 0.2 // seconds
 
   const edge = add([
-    rect(distance, 30),
+    rect(distance, 10),
     pos(node1.pos.x, node1.pos.y),
     rotate(angle),
     anchor("left"),

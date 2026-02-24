@@ -1,8 +1,11 @@
 # Todos
 
 - Improve looks of menu
+- Try quarter circles (with shadow) going into the screen's edges for the score labels
 - Create pause menu during game (menu item: Resume / Back to menu)
 - Improve looks of misere badge
+- How to teach?
+- Add music
 - Add settings to turn on/off music
 - Add better AI
 - Add SFX

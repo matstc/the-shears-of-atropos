@@ -1,26 +1,25 @@
-import { GameObj } from "kaplay"
+import { GameObj, KAPLAYCtx } from "kaplay"
 import "kaplay/global"
 import { hoverable } from "./hoverable"
-import { edgeColor } from "./styles"
+import { nodeColor } from "./styles"
 
 export type NodeOpt = {
   x: number
   y: number
+  nodeRadius: number
   onRemove: (node:GameObj) => void
   boardDimension: number
-  screenDimension: number
 }
 
 export const nodeFactory = (opt: NodeOpt): GameObj => {
   const x = opt.x
   const y = opt.y
   const onRemove = opt.onRemove
-  const radius = Math.floor(opt.screenDimension / opt.boardDimension / (35 / opt.boardDimension))
 
   const node = add([
-    circle(radius),
+    circle(opt.nodeRadius, { fill: false }),
     pos(x, y),
-    color(Color.fromHex(edgeColor)),
+    outline(2, Color.fromHex(nodeColor)),
     anchor("center"),
     z(5),
     area(),
@@ -37,12 +36,6 @@ export const nodeFactory = (opt: NodeOpt): GameObj => {
         }
       }
     }
-  ])
-
-  node.add([
-    circle(Math.floor(radius - radius / 3)),
-    color(WHITE),
-    anchor("center"),
   ])
 
   return node

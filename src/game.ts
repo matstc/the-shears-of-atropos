@@ -4,15 +4,17 @@ import { edgeFactory } from "./edge";
 import { dotsAndBoxesFactory } from "./graph";
 import { createHud } from "./hud";
 import { nodeFactory } from "./node";
-import { playerColors } from "./styles";
+import { addBackground, playerColors } from "./styles";
 import { ExtendedEdge, GraphNode, Player1OrPlayer2, Scores } from "./types";
 
 export const createNewGame = function(k: KAPLAYCtx<any, never>, boardDimension:number, misere:boolean, vsCpu:boolean) {
+  addBackground(k)
   let currentPlayer:Player1OrPlayer2 = 1;
   const scores:Scores = { 1: 0, 2: 0 };
   const hud = createHud(k, misere)
   const minScreenDimension = Math.min(width(), height())
   const xOffset = (width() - minScreenDimension) / 2;
+  const nodeRadius = Math.floor(minScreenDimension / boardDimension / (55 / boardDimension))
   const { simulation, nodes: simulationNodes, edges: simulationEdges } = dotsAndBoxesFactory(boardDimension, minScreenDimension, minScreenDimension)
 
   const onRemoveNode = (sNode:GraphNode, node:GameObj) => {
@@ -48,11 +50,11 @@ export const createNewGame = function(k: KAPLAYCtx<any, never>, boardDimension:n
     }
   };
 
-  const nodeInstances = simulationNodes.map(n => nodeFactory({ x: n.x! + xOffset, y: n.y!, boardDimension, screenDimension: minScreenDimension, onRemove: onRemoveNode.bind(null, n) }));
+  const nodeInstances = simulationNodes.map(n => nodeFactory({ x: n.x! + xOffset, y: n.y!, nodeRadius, boardDimension, onRemove: onRemoveNode.bind(null, n) }));
   const edgeInstances = simulationEdges.map(e => {
     const sIdx = (e.source as GraphNode).id;
     const tIdx = (e.target as GraphNode).id;
-    return edgeFactory(nodeInstances[sIdx], nodeInstances[tIdx], onRemoveEdge.bind(null, e), () => playerColors[currentPlayer]);
+    return edgeFactory(nodeInstances[sIdx], nodeInstances[tIdx], nodeRadius, onRemoveEdge.bind(null, e), () => playerColors[currentPlayer]);
   });
 
   function checkGameOver() {
@@ -88,12 +90,12 @@ export const createNewGame = function(k: KAPLAYCtx<any, never>, boardDimension:n
     edgeInstances.forEach((edgeObj) => {
       const n1 = edgeObj.node1;
       const n2 = edgeObj.node2;
-      const dx = n2.pos.x - n1.pos.x;
-      const dy = n2.pos.y - n1.pos.y;
-
-      edgeObj.pos = vec2(n1.pos.x, n1.pos.y);
-      edgeObj.angle = Math.atan2(dy, dx) * (180 / Math.PI);
-      edgeObj.width = Math.sqrt(dx * dx + dy * dy);
+      const diff = n2.pos.sub(n1.pos);
+      const dist = diff.len();
+      const dir = diff.unit();
+      edgeObj.pos = n1.pos.add(dir.scale(nodeRadius));
+      edgeObj.angle = dir.angle();
+      edgeObj.width = dist - 2 * nodeRadius;
     });
   }
 

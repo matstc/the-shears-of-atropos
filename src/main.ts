@@ -9,6 +9,8 @@ const k = kaplay({
 });
 
 k.loadRoot("./");
+k.loadFont("AdventProRegular", "fonts/AdventPro-Regular.ttf");
+k.loadFont("AdventProBold", "fonts/AdventPro-Bold.ttf");
 
 k.scene("menu", () => {
   createMenu(k, (dimension, misere, vsCpu) => {

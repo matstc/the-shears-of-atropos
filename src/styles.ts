@@ -1,17 +1,24 @@
+import { KAPLAYCtx } from "kaplay";
 import { Player1OrPlayer2 } from "./types";
 
+export const menuTextColor = "#333333"
 export const backgroundColor = "#dddddd"
-export const edgeColor = "#bbbbbb"
+export const edgeColor = "#000000"
+export const nodeColor = "#000000"
 export const playerColors:Record<Player1OrPlayer2, string> = {
-  1: "#8888dd",
-  2: "#dd8888"
+  1: "#ffffff",
+  2: "#777777",
 };
+export const playerTextColors:Record<Player1OrPlayer2, string> = {
+  1: "#ffffff",
+  2: "#777777",
+}
 export const playerBackgrounds:Record<Player1OrPlayer2, string> = {
-  1: lightenHex("#8888dd", 60),
-  2: lightenHex("#dd8888", 60)
+  1: "#ffffff",
+  2: "#bbbbbb",
 }
 
-function lightenHex(hex: string, percent: number): string {
+export function lightenHex(hex: string, percent: number): string {
   const cleanHex = hex.replace("#", "");
 
   let r = parseInt(cleanHex.substring(0, 2), 16);
@@ -25,4 +32,21 @@ function lightenHex(hex: string, percent: number): string {
   const getHex = (c: number) => c.toString(16).padStart(2, "0");
 
   return `#${getHex(r)}${getHex(g)}${getHex(b)}`;
+}
+
+export function addBackground(k: KAPLAYCtx) {
+  return k.add([
+    k.fixed(),
+    k.z(-100),
+    {
+      draw() {
+        k.drawRect({
+          width: k.width(),
+          height: k.height(),
+          gradient: [k.rgb(221, 221, 221), k.rgb(190, 190, 190)],
+          fill: true,
+        });
+      },
+    },
+  ]);
 }
