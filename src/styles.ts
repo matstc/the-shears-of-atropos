@@ -47,7 +47,7 @@ export function addBackground(k: KAPLAYCtx) {
   ]);
 }
 
-export function playRandomSound(k, label:string, volume:number|null) {
+export function playRandomSound(k, label:string, volume?:number) {
   const n = Math.floor(Math.random() * 3) + 1
   k.play(`${label}${n}`, { volume: volume || 1 })
 }

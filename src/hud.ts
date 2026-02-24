@@ -1,5 +1,5 @@
 import { GameObj, KAPLAYCtx } from "kaplay";
-import { lightenHex, menuTextColor, playerColors, playerTextColors } from "./styles";
+import { lightenHex, menuTextColor, playerColors, playerTextColors, playRandomSound } from "./styles";
 import { Player1OrPlayer2, Scores } from "./types";
 
 export async function createHud(k: KAPLAYCtx<any, never>, misere: boolean, vsCpu:boolean) {
@@ -222,7 +222,7 @@ export async function createHud(k: KAPLAYCtx<any, never>, misere: boolean, vsCpu
         setCursor("default");
         backToMenuButton.color = Color.fromHex(menuTextColor);
       });
-      backToMenuButton.onClick(() => k.go("menu"));
+      backToMenuButton.onClick(() => { playRandomSound(k, "select"); k.go("menu") });
     },
     showPauseMenu: (onResume: () => void) => {
       pauseOverlay = k.add([
@@ -256,7 +256,7 @@ export async function createHud(k: KAPLAYCtx<any, never>, misere: boolean, vsCpu
       };
 
       addButton("Resume", -40, onResume);
-      addButton("Back to menu", 40, () => k.go("menu"));
+      addButton("Back to menu", 40, () => { playRandomSound(k, "select"); k.go("menu") });
 
       return () => {
         pauseOverlay!.destroy();

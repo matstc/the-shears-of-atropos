@@ -1,8 +1,6 @@
 # Todos
 
 - How to teach?
-- Add music
-- Add settings to turn on/off music
 - Add better AI (and setting?)
 
 # Folder structure

@@ -25,6 +25,8 @@ export const createNewGame = async function(k: KAPLAYCtx<any, never>, boardDimen
   const togglePause = () => {
     if (isPaused) {
       isPaused = false;
+      playRandomSound(k, "select")
+
       if (destroyPauseMenu) destroyPauseMenu();
       k.setCursor("default");
     } else {
