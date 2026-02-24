@@ -55,14 +55,44 @@ export const edgeFactory = (node1: GameObj, node2: GameObj, nodeRadius: number, 
       },
       async pluck() {
         if (this.isDeleting) return;
-
         this.isDeleting = true;
+
+        const startPos = this.pos;
+        const currentAngle = this.angle;
+        const currentWidth = this.width;
+        const halfWidth = currentWidth / 2;
+        const currentColor = this.color;
+        const n1Pos = node1.pos;
+        const n2Pos = node2.pos;
 
         node1.removeEdge(this);
         node2.removeEdge(this);
-        setCursor("default");
         onRemove(this);
         this.destroy();
+        setCursor("default");
+
+        const angleRad = currentAngle * (Math.PI / 180);
+
+        const leftHalf = add([
+          rect(halfWidth, 10),
+          pos(startPos),
+          rotate(currentAngle),
+          anchor("left"),
+          color(currentColor),
+        ]);
+
+        const rightHalf = add([
+          rect(halfWidth, 10),
+          pos(n2Pos.sub(vec2(Math.cos(angleRad), Math.sin(angleRad)).scale(nodeRadius))),
+          rotate(currentAngle),
+          anchor("right"),
+          color(currentColor),
+        ]);
+
+        tween(halfWidth, 0, 0.15, (v) => leftHalf.width = v, easings.easeOutCubic)
+        .onEnd(() => leftHalf.destroy());
+        tween(halfWidth, 0, 0.15, (v) => rightHalf.width = v, easings.easeOutCubic)
+        .onEnd(() => rightHalf.destroy());
       }
     },
   ])
