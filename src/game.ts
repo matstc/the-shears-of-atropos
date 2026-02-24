@@ -144,6 +144,9 @@ export const createNewGame = async function(k: KAPLAYCtx<any, never>, boardDimen
   }
 
   return {
+    onResize: () => {
+      hud.onResize()
+    },
     onUpdate: () => {
       if (isPaused) return;
       if (isGameOver) return;

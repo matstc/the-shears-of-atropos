@@ -4,10 +4,28 @@ import { Player1OrPlayer2, Scores } from "./types";
 
 export async function createHud(k: KAPLAYCtx<any, never>, misere: boolean, vsCpu:boolean) {
   const margin = 40;
+  let pauseOverlay:GameObj|null = null;
+  let pauseMenuRoot:GameObj|null = null;
+  let gameOverRoot:GameObj|null = null;
+  let misereBadge:GameObj|null = null;
+  const getLabelTopPos = () => k.vec2(k.width() / 2, margin);
+  const getLabelCenterPos = () => k.vec2(k.width() / 2, k.height() / 2);
+  const getP1TargetPos = () => k.vec2(margin + 20, k.height() - margin * 1.5);
+  const getP2TargetPos = () => k.vec2(k.width() - margin - 20, k.height() - margin * 1.5);
+  const getBadgeInitialPos = (player: number) => {
+    const offset = player === 1 ? -60 : 60;
+    return k.vec2((k.width() / 2) + offset, (k.height() / 2) + 100);
+  };
+  const getPauseOverlayWidth = () => k.width()
+  const getPauseOverlayHeight = () => k.height()
+  const getPauseMenuRootWidth = () => k.width() / 2
+  const getPauseMenuRootHeight = () => k.height() / 2
+  const getGameOverRootPos = () => k.vec2(k.width() / 2, k.height() / 2);
+  const getMisereBadgePos = () => k.vec2(k.width() - 110 + margin, margin - 2)
 
   const uiLabel = k.add([
     text(`GO PLAYER 1`, { font: "AdventProBold", size: 64 }),
-    pos(width() / 2, height() / 2),
+    pos(getLabelCenterPos()),
     anchor("center"),
     color(k.Color.fromHex(playerColors[1])),
     fixed(),
@@ -15,13 +33,11 @@ export async function createHud(k: KAPLAYCtx<any, never>, misere: boolean, vsCpu
     opacity(0)
   ]);
 
-  const createScoreBadge = (player: Player1OrPlayer2, targetX: number) => {
-    const initialX = (width() / 2) + (player === 1 ? -60 : 60);
-    const initialY = (height() / 2) + 100;
+  const createScoreBadge = (player: Player1OrPlayer2) => {
     const targetY = k.height() - margin * 1.5;
 
     const container = k.add([
-      pos(initialX, initialY),
+      pos(getBadgeInitialPos(player)),
       anchor("center"),
       fixed(),
       z(10),
@@ -45,44 +61,49 @@ export async function createHud(k: KAPLAYCtx<any, never>, misere: boolean, vsCpu
       opacity(),
     ]);
 
-    return { container, scoreLabel, targetX, targetY };
+    return { container, scoreLabel };
   };
 
-  const p1Data = createScoreBadge(1, margin + 20);
-  const p2Data = createScoreBadge(2, k.width() - margin - 20);
+  const p1 = createScoreBadge(1);
+  const p2 = createScoreBadge(2);
 
   tween(0, 1, 0.7, (v) => {
     uiLabel.opacity = v;
-    p1Data.container.opacity = v;
-    p2Data.container.opacity = v;
-    p1Data.container.children.forEach(child => child.opacity = v);
-    p2Data.container.children.forEach(child => child.opacity = v);
+    p1.container.opacity = v;
+    p2.container.opacity = v;
+    p1.container.children.forEach(child => child.opacity = v);
+    p2.container.children.forEach(child => child.opacity = v);
   }, easings.easeInOutExpo);
 
   await wait(1.5);
 
-  tween(uiLabel.pos, vec2(uiLabel.pos.x, margin), 0.8, (v) => uiLabel.pos = v, k.easings.linear);
+  tween(uiLabel.pos, getLabelTopPos(), 0.8, (v) => uiLabel.pos = v, k.easings.linear);
   tween(64, 32, 0.7, (v) => uiLabel.textSize = v, k.easings.linear);
-  tween(p1Data.container.pos, k.vec2(p1Data.targetX, p1Data.targetY), 0.7, (v) => p1Data.container.pos = v, k.easings.easeInOutSine);
-  tween(p2Data.container.pos, k.vec2(p2Data.targetX, p2Data.targetY), 0.7, (v) => p2Data.container.pos = v, k.easings.easeInOutSine);
+  tween(p1.container.pos, getP1TargetPos(), 0.7, (v) => p1.container.pos = v, k.easings.easeInOutSine);
+  tween(p2.container.pos, getP2TargetPos(), 0.7, (v) => p2.container.pos = v, k.easings.easeInOutSine);
   await wait(0.4);
 
-  const p1ScoreLabel = p1Data.scoreLabel;
-  const p2ScoreLabel = p2Data.scoreLabel;
+  const p1ScoreLabel = p1.scoreLabel;
+  const p2ScoreLabel = p2.scoreLabel;
 
   if (misere) {
-    add([
+    misereBadge = k.add([
+      k.pos(getMisereBadgePos()),
+      k.anchor("center"),
+    ])
+
+    misereBadge.add([
       rect(60, 24, { radius: 3 }),
-      pos(k.width() - 110 + margin, margin - 2),
+      pos(0, 0),
       anchor("center"),
       color(Color.fromHex("#888888")),
       fixed(),
       z(10),
     ]);
 
-    add([
+    misereBadge.add([
       text("MlSERE", { font: "AdventProRegular", size: 20 }),
-      pos(k.width() - 70, margin - 2),
+      pos(0, 0),
       anchor("center"),
       color(WHITE),
       fixed(),
@@ -111,32 +132,38 @@ export async function createHud(k: KAPLAYCtx<any, never>, misere: boolean, vsCpu
       uiLabel.text = "GAME OVER";
       uiLabel.color = Color.fromHex(menuTextColor);
 
+      gameOverRoot = k.add([
+        k.pos(getGameOverRootPos()),
+        k.anchor("center"),
+        k.fixed(),
+        k.z(11),
+        k.opacity(0)
+      ]);
+
       const string = winner === null ? "DRAW" : `Player ${winner} won`;
       const explanation = misere ? "by collecting the least lives" : "by collecting the most lives";
 
-      const gameOverElements:GameObj[] = [];
-
-      gameOverElements.push(k.add([
+      gameOverRoot.add([
         text(string, { font: "AdventProRegular", size: 47 }),
-        pos(width() / 2, height() / 2),
+        pos(0, 0),
         color(winner ? Color.fromHex(playerColors[winner]) : Color.fromHex(menuTextColor)),
         anchor("center"),
         opacity(0),
         fixed(),
-      ]));
+      ]);
 
-      gameOverElements.push(k.add([
+      gameOverRoot.add([
         text(explanation, { font: "AdventProRegular", size: 20 }),
-        pos(width() / 2, height() / 2 + 50),
+        pos(0, 50),
         color(winner ? Color.fromHex(playerColors[winner]) : Color.fromHex(lightenHex(menuTextColor, 30))),
         anchor("center"),
         opacity(0),
         fixed(),
-      ]));
+      ]);
 
-      const backToMenuButton = k.add([
+      const backToMenuButton = gameOverRoot.add([
         text("← Back to menu", { font: "AdventProRegular", size: 24 }),
-        pos(width() / 2, height() / 2 + 180),
+        pos(0, 180),
         color(menuTextColor),
         anchor("center"),
         area(),
@@ -144,9 +171,12 @@ export async function createHud(k: KAPLAYCtx<any, never>, misere: boolean, vsCpu
         fixed(),
       ]);
 
-      gameOverElements.push(backToMenuButton);
-
-      k.tween(0, 1, 0.7, (val) => gameOverElements.forEach(el => el.opacity = val), k.easings.easeOutQuad);
+      k.tween(0, 1, 0.7, (val) => {
+        gameOverRoot.opacity = val;
+        gameOverRoot.children.forEach(child => {
+          child.opacity = val;
+        });
+      }, k.easings.easeOutQuad);
 
       backToMenuButton.onHoverUpdate(() => {
         if (backToMenuButton.opacity >= 1) {
@@ -161,23 +191,23 @@ export async function createHud(k: KAPLAYCtx<any, never>, misere: boolean, vsCpu
       backToMenuButton.onClick(() => k.go("menu"));
     },
     showPauseMenu: (onResume: () => void) => {
-      const overlay = k.add([
-        k.rect(k.width(), k.height()),
+      pauseOverlay = k.add([
+        k.rect(getPauseOverlayWidth(), getPauseOverlayHeight()),
         k.color(0, 0, 0),
         k.opacity(0.3),
         k.fixed(),
         k.z(100),
       ]);
 
-      const menuRoot = k.add([
-        k.pos(k.width() / 2, k.height() / 2),
+      pauseMenuRoot = k.add([
+        k.pos(getPauseMenuRootWidth(), getPauseMenuRootHeight()),
         k.anchor("center"),
         k.fixed(),
         k.z(101),
       ]);
 
       const addButton = (label: string, y: number, onClick: () => void) => {
-        const btn = menuRoot.add([
+        const btn = pauseMenuRoot!.add([
           k.text(label, { font: "AdventProRegular", size: 32 }),
           k.pos(0, y),
           k.color(k.Color.fromHex(menuTextColor)),
@@ -195,9 +225,31 @@ export async function createHud(k: KAPLAYCtx<any, never>, misere: boolean, vsCpu
       addButton("Back to menu", 40, () => k.go("menu"));
 
       return () => {
-        overlay.destroy();
-        menuRoot.destroy();
+        pauseOverlay!.destroy();
+        pauseMenuRoot!.destroy();
       };
-    }
+    },
+    onResize: () => {
+      if (pauseOverlay) {
+        pauseOverlay.width = getPauseOverlayWidth();
+        pauseOverlay.height = getPauseOverlayHeight();
+      }
+
+      if (pauseMenuRoot) {
+        pauseMenuRoot.pos = k.vec2(getPauseMenuRootWidth(), getPauseMenuRootHeight());
+      }
+
+      if (gameOverRoot) {
+        gameOverRoot.pos = getGameOverRootPos();
+      }
+
+      if (misereBadge) {
+        misereBadge.pos = getMisereBadgePos();
+      }
+
+      uiLabel.pos = getLabelTopPos();
+      p1.container.pos = getP1TargetPos();
+      p2.container.pos = getP2TargetPos();
+    },
   };
 }

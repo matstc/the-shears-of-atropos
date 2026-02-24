@@ -16,6 +16,7 @@ k.loadSound("game-over", "sounds/game-over.wav");
 k.loadSound("select", "sounds/select.wav");
 
 let mainMenu = null
+let game = null
 
 k.scene("menu", () => {
   mainMenu = createMenu(k, (dimension, misere, vsCpu) => {
@@ -24,7 +25,7 @@ k.scene("menu", () => {
 });
 
 k.scene("game", async ({ dimension, misere, vsCpu }) => {
-  const game = await createNewGame(k, dimension, misere, vsCpu);
+  game = await createNewGame(k, dimension, misere, vsCpu);
 
   k.onUpdate(() => {
     game.onUpdate();
@@ -39,8 +40,11 @@ window.addEventListener("resize", () => {
   resizeTimeout = window.setTimeout(() => {
     console.log("Resize finished - Restarting Menu");
 
-    if (k.getSceneName() === "menu") {
+    const scene = k.getSceneName()
+    if (scene === "menu") {
       k.go("menu");
+    } else if (scene == "game") {
+      game.onResize()
     }
   }, 100);
 });
