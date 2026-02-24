@@ -14,21 +14,22 @@ export function createMenu(k: KAPLAYCtx<any, never>, onStart:(dimension:number, 
   const yGap = 85;
 
   add([
-    text("The Shears of Atropos", { font: "AdventProBold", size: 48 }),
+    text("The Shears of Atropos", { font: "AdventProBold", size: width() < 420 ? 40 : 48 }),
     pos(k.width() / 2, 80),
     anchor("center"),
     color(textColor),
     fixed(),
   ]);
 
+  const menuXOffset = Math.min(200, width() / 2 - 4)
   const menu = add([
-    pos(k.width() / 2 - 200, k.height() / 4),
+    pos(k.width() / 2 - menuXOffset, k.height() / 4),
     fixed(),
   ]);
 
   const addMenuRow = (y: number, label: string, description: string, getValue: () => string, onPrev: () => void, onNext: () => void) => {
     const row = menu.add([k.pos(0, y)]);
-    const valueStartX = 290;
+    const valueStartX = Math.min(290, width() * (width() < 420 ? 0.685 : 0.7));
 
     row.add([
       text(label, { font: "AdventProRegular", size: 24 }),
@@ -108,11 +109,11 @@ export function createMenu(k: KAPLAYCtx<any, never>, onStart:(dimension:number, 
   () => isMisere = !isMisere
   );
 
-
 const startBtn = menu.add([
   text("Start Game", { font: "AdventProRegular", size: 32 }),
+  pos(menuXOffset, yGap * 4),
+  anchor("center"),
   color(textColor),
-  pos(140, yGap * 4),
   area()
 ]);
 
