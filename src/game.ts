@@ -105,6 +105,7 @@ export const createNewGame = async function(k: KAPLAYCtx<any, never>, boardDimen
         edge.activate();
         await wait(0.3);
       }
+
       edge.pluck();
     });
   })
