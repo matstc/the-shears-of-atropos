@@ -21,7 +21,7 @@ export function createMenu(k: KAPLAYCtx<any, never>, onStart:(dimension:number, 
     fixed(),
   ]);
 
-  const menuXOffset = Math.min(200, width() / 2 - 4)
+  const menuXOffset = Math.min(200, width() / 2 - 6)
   const menu = add([
     pos(k.width() / 2 - menuXOffset, k.height() / 4),
     fixed(),
@@ -29,7 +29,7 @@ export function createMenu(k: KAPLAYCtx<any, never>, onStart:(dimension:number, 
 
   const addMenuRow = (y: number, label: string, description: string, getValue: () => string, onPrev: () => void, onNext: () => void) => {
     const row = menu.add([k.pos(0, y)]);
-    const valueStartX = Math.min(290, width() * (width() < 420 ? 0.685 : 0.7));
+    const valueStartX = menuXOffset * 2 - 112;
 
     row.add([
       text(label, { font: "AdventProRegular", size: 24 }),
@@ -37,10 +37,17 @@ export function createMenu(k: KAPLAYCtx<any, never>, onStart:(dimension:number, 
       pos(0, 0)
     ]);
 
+    const triangleWidth = 20;
+    const triangleHeight = 30;
+
     const prevBtn = row.add([
-      text("🢐", { size: 64 }),
+      polygon([
+        vec2(0, 0),                       // Tip (pointing left)
+        vec2(triangleWidth, -triangleHeight / 2), // Top right
+        vec2(triangleWidth, triangleHeight / 2),  // Bottom right
+      ]),
       anchor("center"),
-      pos(valueStartX, 15),
+      pos(valueStartX - 10, 12),
       color(textColor),
       area({ shape: new Rect(vec2(-3, -1), 40, 38) }),
     ]);
@@ -55,9 +62,13 @@ export function createMenu(k: KAPLAYCtx<any, never>, onStart:(dimension:number, 
     ]);
 
     const nextBtn = row.add([
-      text("🢒", { size: 64 }),
+      polygon([
+        vec2(0, -triangleHeight / 2), // Top left
+        vec2(triangleWidth, 0),        // Tip (pointing right)
+        vec2(0, triangleHeight / 2),  // Bottom left
+      ]),
       anchor("center"),
-      pos(valueStartX + 100, 15),
+      pos(valueStartX + 90, 12),
       color(textColor),
       area({ shape: new Rect(vec2(-3, -1), 40, 38) }),
     ]);
@@ -111,7 +122,7 @@ export function createMenu(k: KAPLAYCtx<any, never>, onStart:(dimension:number, 
 
 const startBtn = menu.add([
   text("Start Game", { font: "AdventProRegular", size: 32 }),
-  pos(menuXOffset, yGap * 4),
+  pos(menuXOffset, yGap * 5),
   anchor("center"),
   color(textColor),
   area()

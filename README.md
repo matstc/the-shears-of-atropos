@@ -1,10 +1,13 @@
 # Todos
 
-- Experiment with red as P2 color
+- Allow resizing
+- Fix chevrons on mobile
+- Why is an edge already white at the beginning on mobile?
+- Make it so that tapping once is enough
 - How to teach?
 - Add music
 - Add settings to turn on/off music
-- Add better AI
+- Add better AI (and setting?)
 - Improve SFX
 - Make more usable on mobile
 
