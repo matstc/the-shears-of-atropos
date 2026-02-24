@@ -1,7 +1,6 @@
 # Todos
 
 - Create pause menu during game (menu item: Resume / Back to menu)
-- Improve looks of misere badge
 - How to teach?
 - Add music
 - Add settings to turn on/off music

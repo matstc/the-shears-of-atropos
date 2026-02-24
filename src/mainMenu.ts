@@ -114,7 +114,7 @@ const startBtn = menu.add([
 ]);
 
 startBtn.onClick(() => {
-  onStart(Math.floor(Math.sqrt(parseInt(dimension, 10))), isMisere, vsCpu)
+  onStart(Math.floor(Math.sqrt(dimension)), isMisere, vsCpu)
 });
 
 [startBtn].forEach(btn => {
