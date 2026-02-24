@@ -91,8 +91,9 @@ export const createNewGame = function(k: KAPLAYCtx<any, never>, boardDimension:n
         winner = scores[1] > scores[2] ? 1 : 2;
       }
 
-      await wait(1)
       hud.showGameOver(winner)
+      await wait(1)
+      k.play("game-over", { volume: 0.9 });
     }
   }
 

@@ -1,11 +1,12 @@
 # Todos
 
+- Make target area of edges bigger
 - Create pause menu during game (menu item: Resume / Back to menu)
 - How to teach?
 - Add music
 - Add settings to turn on/off music
 - Add better AI
-- Add SFX
+- Improve SFX
 - Make more usable on mobile
 
 # Folder structure

@@ -1,4 +1,4 @@
-import { KAPLAYCtx } from "kaplay";
+import { GameObj, KAPLAYCtx } from "kaplay";
 import { lightenHex, menuTextColor, playerColors, playerTextColors } from "./styles";
 import { Player1OrPlayer2, Scores } from "./types";
 
@@ -69,42 +69,58 @@ export function createHud(k: KAPLAYCtx<any, never>, misere: boolean) {
       p1ScoreLabel.text = `${scores[1]}`;
       p2ScoreLabel.text = `${scores[2]}`;
     },
-    showGameOver: (winner:Player1OrPlayer2|null) => {
-      k.play("game-over", { volume: 0.9 })
+    showGameOver: (winner: Player1OrPlayer2 | null) => {
+      uiLabel.text = "GAME OVER";
+      uiLabel.color = Color.fromHex(menuTextColor);
 
-      uiLabel.text = "GAME OVER"
-      uiLabel.color = Color.fromHex(menuTextColor)
-      const string = winner === null ? "DRAW" : `Player ${winner} won`
-      const explanation = misere ? "by collecting the least lives" : "by collecting the most lives"
+      const string = winner === null ? "DRAW" : `Player ${winner} won`;
+      const explanation = misere ? "by collecting the least lives" : "by collecting the most lives";
 
-      add([
+      const gameOverElements:GameObj[] = [];
+
+      gameOverElements.push(k.add([
         text(string, { font: "AdventProRegular", size: 47 }),
         pos(width() / 2, height() / 2),
         color(winner ? Color.fromHex(playerColors[winner]) : Color.fromHex(menuTextColor)),
         anchor("center"),
+        opacity(0),
         fixed(),
-      ]);
+      ]));
 
-      add([
+      gameOverElements.push(k.add([
         text(explanation, { font: "AdventProRegular", size: 20 }),
         pos(width() / 2, height() / 2 + 50),
         color(winner ? Color.fromHex(playerColors[winner]) : Color.fromHex(lightenHex(menuTextColor, 30))),
         anchor("center"),
+        opacity(0),
         fixed(),
-      ]);
+      ]));
 
-      const backToMenuButton = add([
+      const backToMenuButton = k.add([
         text("← Back to menu", { font: "AdventProRegular", size: 24 }),
         pos(width() / 2, height() / 2 + 180),
         color(menuTextColor),
         anchor("center"),
         area(),
+        opacity(0),
         fixed(),
       ]);
 
-      backToMenuButton.onHover(() => { setCursor("pointer"); backToMenuButton.color = BLACK })
-      backToMenuButton.onHoverEnd(() => { setCursor("default"); backToMenuButton.color = Color.fromHex(menuTextColor) })
-      backToMenuButton.onClick(() => k.go("menu"))
+      gameOverElements.push(backToMenuButton);
+
+      k.tween(0, 1, 0.7, (val) => gameOverElements.forEach(el => el.opacity = val), k.easings.easeOutQuad);
+
+      backToMenuButton.onHoverUpdate(() => {
+        if (backToMenuButton.opacity >= 1) {
+          setCursor("pointer");
+          backToMenuButton.color = BLACK;
+        }
+      });
+      backToMenuButton.onHoverEnd(() => {
+        setCursor("default");
+        backToMenuButton.color = Color.fromHex(menuTextColor);
+      });
+      backToMenuButton.onClick(() => k.go("menu"));
     }
   };
 }
