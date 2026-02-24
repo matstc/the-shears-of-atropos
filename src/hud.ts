@@ -9,6 +9,8 @@ export async function createHud(k: KAPLAYCtx<any, never>, misere: boolean, vsCpu
   let gameOverRoot:GameObj|null = null;
   let misereBadge:GameObj|null = null;
   let lastCurrentPlayer:Player1OrPlayer2 = 1;
+  let gameOverShowing = false;
+  let goPlayerTween = null;
   const getLabelTopPos = () => k.vec2(k.width() / 2, margin);
   const getLabelCenterPos = () => k.vec2(k.width() / 2, k.height() / 2);
   const getP1TargetPos = () => k.vec2(margin + 20, k.height() - margin * 1.5);
@@ -35,8 +37,6 @@ export async function createHud(k: KAPLAYCtx<any, never>, misere: boolean, vsCpu
   ]);
 
   const createScoreBadge = (player: Player1OrPlayer2) => {
-    const targetY = k.height() - margin * 1.5;
-
     const container = k.add([
       pos(getBadgeInitialPos(player)),
       anchor("center"),
@@ -123,7 +123,12 @@ export async function createHud(k: KAPLAYCtx<any, never>, misere: boolean, vsCpu
 
   return {
     update: async (currentPlayer: Player1OrPlayer2, scores: Scores) => {
-      tween(uiLabel.opacity, 0, 0.2, (v) => uiLabel.opacity = v).onEnd(() => {
+      if (gameOverShowing) return;
+
+      goPlayerTween = tween(uiLabel.opacity, 0, 0.2, (v) => uiLabel.opacity = v)
+      goPlayerTween.onEnd(() => {
+        if (gameOverShowing) return;
+
         uiLabel.text = `GO PLAYER ${currentPlayer}`;
         uiLabel.color = k.Color.fromHex(playerColors[currentPlayer]);
 
@@ -163,8 +168,13 @@ export async function createHud(k: KAPLAYCtx<any, never>, misere: boolean, vsCpu
       }
     },
     showGameOver: (winner: Player1OrPlayer2 | null) => {
+      gameOverShowing = true;
+      if (goPlayerTween) {
+        goPlayerTween.cancel()
+      }
       uiLabel.text = "GAME OVER";
       uiLabel.color = Color.fromHex(menuTextColor);
+      uiLabel.opacity = 1;
 
       gameOverRoot = k.add([
         k.pos(getGameOverRootPos()),
