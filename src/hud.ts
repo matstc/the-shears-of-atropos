@@ -52,7 +52,7 @@ export function createHud(k: KAPLAYCtx<any, never>, misere: boolean) {
     ]);
 
     add([
-      text("MlSERE", { font: "AdventProRegular", size: 16 }),
+      text("MlSERE", { font: "AdventProRegular", size: 20 }),
       pos(k.width() - 70, margin),
       anchor("center"),
       color(WHITE),
@@ -84,8 +84,8 @@ export function createHud(k: KAPLAYCtx<any, never>, misere: boolean) {
       ]);
 
       add([
-        text(explanation, { font: "AdventProRegular", size: 16 }),
-        pos(width() / 2, height() / 2 + 35),
+        text(explanation, { font: "AdventProRegular", size: 20 }),
+        pos(width() / 2, height() / 2 + 50),
         color(winner ? Color.fromHex(playerColors[winner]) : Color.fromHex(lightenHex(menuTextColor, 30))),
         anchor("center"),
         fixed(),
@@ -93,15 +93,15 @@ export function createHud(k: KAPLAYCtx<any, never>, misere: boolean) {
 
       const backToMenuButton = add([
         text("← Back to menu", { font: "AdventProRegular", size: 24 }),
-        pos(width() / 2, height() / 2 + 100),
+        pos(width() / 2, height() / 2 + 180),
         color(menuTextColor),
         anchor("center"),
         area(),
         fixed(),
       ]);
 
-      backToMenuButton.onHover(() => setCursor("pointer"))
-      backToMenuButton.onHoverEnd(() => setCursor("default"))
+      backToMenuButton.onHover(() => { setCursor("pointer"); backToMenuButton.color = BLACK })
+      backToMenuButton.onHoverEnd(() => { setCursor("default"); backToMenuButton.color = Color.fromHex(menuTextColor) })
       backToMenuButton.onClick(() => k.go("menu"))
     }
   };

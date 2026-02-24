@@ -59,7 +59,7 @@ export function createMenu(k: KAPLAYCtx<any, never>, onStart:(dimension:number, 
     ]);
 
     row.add([
-      text(description, { font: "AdventProRegular", size: 16 }),
+      text(description, { font: "AdventProRegular", size: 20 }),
       pos(0, 30),
       color(lightenHex(menuTextColor, 30))
     ])

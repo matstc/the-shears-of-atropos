@@ -16,6 +16,7 @@ export const createNewGame = function(k: KAPLAYCtx<any, never>, boardDimension:n
   const xOffset = (width() - minScreenDimension) / 2;
   const nodeRadius = Math.floor(minScreenDimension / boardDimension / (55 / boardDimension))
   const { simulation, nodes: simulationNodes, edges: simulationEdges } = dotsAndBoxesFactory(boardDimension, minScreenDimension, minScreenDimension)
+  let isGameOver = false;
 
   const onRemoveNode = (sNode:GraphNode, node:GameObj) => {
     const idx = simulationNodes.indexOf(sNode);
@@ -77,6 +78,7 @@ export const createNewGame = function(k: KAPLAYCtx<any, never>, boardDimension:n
 
   function checkGameOver() {
     if (edgeInstances.length === 0) {
+      isGameOver = true;
       let winner:Player1OrPlayer2|null;
       if (misere) {
         winner = scores[1] < scores[2] ? 1 : 2;
@@ -121,6 +123,8 @@ export const createNewGame = function(k: KAPLAYCtx<any, never>, boardDimension:n
 
   return {
     onUpdate: () => {
+      if (isGameOver) return;
+      
       const edges = get("edge").filter(e => e.hovering);
       const nodes = get("node").filter(e => e.hovering);
 
