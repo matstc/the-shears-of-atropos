@@ -10,6 +10,8 @@ import { ExtendedEdge, GraphNode, Player1OrPlayer2, Scores } from "./types";
 export const createNewGame = function(k: KAPLAYCtx<any, never>, boardDimension:number, misere:boolean, vsCpu:boolean) {
   addBackground(k)
   k.play("start-game", { volume: 1 })
+  let isPaused = false;
+  let destroyPauseMenu: (() => void) | null = null;
   let currentPlayer:Player1OrPlayer2 = 1;
   const scores:Scores = { 1: 0, 2: 0 };
   const hud = createHud(k, misere)
@@ -18,6 +20,19 @@ export const createNewGame = function(k: KAPLAYCtx<any, never>, boardDimension:n
   const nodeRadius = Math.floor(minScreenDimension / boardDimension / (55 / boardDimension))
   const { simulation, nodes: simulationNodes, edges: simulationEdges } = dotsAndBoxesFactory(boardDimension, minScreenDimension, minScreenDimension)
   let isGameOver = false;
+
+  const togglePause = () => {
+    if (isPaused) {
+      isPaused = false;
+      if (destroyPauseMenu) destroyPauseMenu();
+      k.setCursor("default");
+    } else {
+      isPaused = true;
+      destroyPauseMenu = hud.showPauseMenu(() => togglePause());
+    }
+  };
+
+  k.onKeyPress("escape", togglePause);
 
   const onRemoveNode = (sNode:GraphNode, node:GameObj) => {
     const idx = simulationNodes.indexOf(sNode);
@@ -131,6 +146,7 @@ export const createNewGame = function(k: KAPLAYCtx<any, never>, boardDimension:n
 
   return {
     onUpdate: () => {
+      if (isPaused) return;
       if (isGameOver) return;
 
       const edges = get("edge").filter(e => e.hovering);

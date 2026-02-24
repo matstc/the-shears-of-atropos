@@ -131,6 +131,45 @@ export function createHud(k: KAPLAYCtx<any, never>, misere: boolean) {
         backToMenuButton.color = Color.fromHex(menuTextColor);
       });
       backToMenuButton.onClick(() => k.go("menu"));
+    },
+    showPauseMenu: (onResume: () => void) => {
+      const overlay = k.add([
+        k.rect(k.width(), k.height()),
+        k.color(0, 0, 0),
+        k.opacity(0.5),
+        k.fixed(),
+        k.z(100),
+      ]);
+
+      const menuRoot = k.add([
+        k.pos(k.width() / 2, k.height() / 2),
+        k.anchor("center"),
+        k.fixed(),
+        k.z(101),
+      ]);
+
+      const addButton = (label: string, y: number, onClick: () => void) => {
+        const btn = menuRoot.add([
+          k.text(label, { font: "AdventProRegular", size: 32 }),
+          k.pos(0, y),
+          k.color(k.Color.fromHex(menuTextColor)),
+          k.anchor("center"),
+          k.area(),
+        ]);
+
+        btn.onHoverUpdate(() => { k.setCursor("pointer"); btn.color = k.BLACK; });
+        btn.onHoverEnd(() => { k.setCursor("default"); btn.color = k.Color.fromHex(menuTextColor); });
+        btn.onClick(onClick);
+        return btn;
+      };
+
+      addButton("Resume", -40, onResume);
+      addButton("Back to menu", 40, () => k.go("menu"));
+
+      return () => {
+        overlay.destroy();
+        menuRoot.destroy();
+      };
     }
   };
 }
