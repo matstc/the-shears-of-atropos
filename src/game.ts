@@ -34,6 +34,7 @@ export const createNewGame = async function(k: KAPLAYCtx<any, never>, boardDimen
   };
 
   k.onKeyPress("escape", togglePause);
+  k.onKeyPress("p", togglePause);
 
   const onRemoveNode = (sNode:GraphNode, node:GameObj) => {
     const idx = simulationNodes.indexOf(sNode);
@@ -93,6 +94,19 @@ export const createNewGame = async function(k: KAPLAYCtx<any, never>, boardDimen
     const tIdx = (e.target as GraphNode).id;
     return edgeFactory(nodeInstances[sIdx], nodeInstances[tIdx], nodeRadius, onRemoveEdge.bind(null, e), () => playerColors[currentPlayer]);
   });
+
+  edgeInstances.map(edge => {
+    edge.onClick(async () => {
+      if (isPaused || isGameOver) return;
+      if (vsCpu && currentPlayer === 2) return;
+
+      if (isTouchscreen()) {
+        edge.activate();
+        await wait(0.3);
+      }
+      edge.pluck();
+    });
+  })
 
   async function checkGameOver() {
     if (edgeInstances.length === 0) {
@@ -156,24 +170,6 @@ export const createNewGame = async function(k: KAPLAYCtx<any, never>, boardDimen
     onUpdate: () => {
       if (isPaused) return;
       if (isGameOver) return;
-
-      const edges = get("edge").filter(e => e.hovering);
-      const nodes = get("node").filter(e => e.hovering);
-
-      if (!vsCpu || currentPlayer == 1) {
-        if (nodes.length > 0) {
-          get("edge").filter(e => e.active).map(e => e.deactivate())
-          setCursor("default");
-        } else if (edges.length > 0) {
-          const first = edges[0]
-          get("edge").filter(e => e !== first && e.active).map(e => e.deactivate())
-          first.activate()
-          setCursor("pointer");
-        } else {
-          get("edge").filter(e => e.active).map(e => e.deactivate())
-          setCursor("default");
-        }
-      }
 
       if (simulation.alpha() >= simulation.alphaMin()) {
         forwardSimulation(0.05)

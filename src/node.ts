@@ -1,6 +1,5 @@
 import { GameObj, KAPLAYCtx } from "kaplay"
 import "kaplay/global"
-import { hoverable } from "./hoverable"
 import { nodeColor } from "./styles"
 
 export type NodeOpt = {
@@ -24,7 +23,6 @@ export const nodeFactory = (opt: NodeOpt): GameObj => {
     anchor("center"),
     z(5),
     area(),
-    hoverable(),
     "shape",
     "node",
     {

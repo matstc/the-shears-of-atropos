@@ -1,6 +1,5 @@
 import { GameObj } from "kaplay"
 import "kaplay/global"
-import { hoverable } from "./hoverable"
 import { edgeColor } from "./styles"
 
 export const edgeFactory = (node1: GameObj, node2: GameObj, nodeRadius: number, onRemove: (edge: GameObj) => void, getCurrentColor: Function): GameObj => {
@@ -16,7 +15,6 @@ export const edgeFactory = (node1: GameObj, node2: GameObj, nodeRadius: number, 
     rotate(angle),
     anchor("left"),
     area({ shape: new Rect(vec2(0, 0), distance, 30) }),
-    hoverable(),
     color(Color.fromHex(edgeColor)),
     "edge",
     {
@@ -60,11 +58,6 @@ export const edgeFactory = (node1: GameObj, node2: GameObj, nodeRadius: number, 
 
         this.isDeleting = true;
 
-        if (isTouchscreen()) {
-          this.activate();
-          await wait(0.2);
-        }
-
         node1.removeEdge(this);
         node2.removeEdge(this);
         setCursor("default");
@@ -73,12 +66,6 @@ export const edgeFactory = (node1: GameObj, node2: GameObj, nodeRadius: number, 
       }
     },
   ])
-
-  edge.onClick(async () => {
-    if (!edge.active) return;
-
-    edge.pluck()
-  })
 
   node1.edges.push(edge)
   node2.edges.push(edge)
