@@ -1,6 +1,6 @@
 import { KAPLAYCtx } from "kaplay";
 import "kaplay/global"
-import { addBackground, lightenHex, menuTextColor } from "./styles";
+import { addBackground, lightenHex, menuTextColor, playRandomSound } from "./styles";
 
 const dimensions = [4, 9, 16, 25, 36]
 let dimension = 16;
@@ -9,7 +9,7 @@ let vsCpu = true;
 
 export function createMenu(k: KAPLAYCtx<any, never>, onStart:(dimension:number, misere:boolean, vsCpu:boolean) => void) {
   addBackground(k)
-  k.play("start-game", { volume: 0 })
+  k.play("game-start", { volume: 0 })
   const textColor = Color.fromHex(menuTextColor)
   const yGap = 85;
   const getTitleSize = () => width() < 420 ? 40 : width() < 1024 ? 48 : 64
@@ -89,8 +89,8 @@ export function createMenu(k: KAPLAYCtx<any, never>, onStart:(dimension:number, 
       valueText.pos.x = valueStartX + xOffset
     };
 
-    prevBtn.onClick(() => { k.play("select", { volume: 1 }); onPrev(); updateUI(); });
-    nextBtn.onClick(() => { k.play("select", { volume: 1 }); onNext(); updateUI(); });
+    prevBtn.onClick(() => { playRandomSound(k, "select"); onPrev(); updateUI(); });
+    nextBtn.onClick(() => { playRandomSound(k, "select"); onNext(); updateUI(); });
 
     [prevBtn, nextBtn].forEach(btn => {
       btn.onHoverUpdate(() => {

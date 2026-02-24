@@ -4,12 +4,12 @@ import { edgeFactory } from "./edge";
 import { createGraph } from "./graph";
 import { createHud } from "./hud";
 import { nodeFactory } from "./node";
-import { addBackground, playerColors } from "./styles";
+import { addBackground, playerColors, playRandomSound } from "./styles";
 import { ExtendedEdge, GraphNode, Player1OrPlayer2, Scores } from "./types";
 
 export const createNewGame = async function(k: KAPLAYCtx<any, never>, boardDimension:number, misere:boolean, vsCpu:boolean) {
   addBackground(k)
-  k.play("start-game", { volume: 1 })
+  k.play("game-start", { volume: 0.7 })
   let isPaused = false;
   let destroyPauseMenu: (() => void) | null = null;
   let currentPlayer:Player1OrPlayer2 = 1;
@@ -63,7 +63,7 @@ export const createNewGame = async function(k: KAPLAYCtx<any, never>, boardDimen
   }
 
   const onRemoveEdge = (sEdge: ExtendedEdge, edge: GameObj) => {
-    k.play("select", { volume: 1 })
+    playRandomSound(k, "blade")
 
     const idx = simulationEdges.indexOf(sEdge);
     if (idx > -1) simulationEdges.splice(idx, 1);
@@ -75,6 +75,7 @@ export const createNewGame = async function(k: KAPLAYCtx<any, never>, boardDimen
     if (edge.node2.isCaptured) nodesCaptured++;
 
     if (nodesCaptured > 0) {
+      playRandomSound(k, "capture", 0.1)
       scores[currentPlayer] += nodesCaptured;
     } else {
       currentPlayer = currentPlayer === 1 ? 2 : 1;
@@ -121,8 +122,8 @@ export const createNewGame = async function(k: KAPLAYCtx<any, never>, boardDimen
       }
 
       hud.showGameOver(winner)
+      k.play("game-over", { volume: 0.4 });
       await wait(1)
-      k.play("game-over", { volume: 0.9 });
     }
   }
 

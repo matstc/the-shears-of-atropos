@@ -11,9 +11,17 @@ const k = kaplay({
 k.loadRoot("./");
 k.loadFont("AdventProRegular", "fonts/AdventPro-Regular.ttf");
 k.loadFont("AdventProBold", "fonts/AdventPro-Bold.ttf");
-k.loadSound("start-game", "sounds/start-game.wav");
-k.loadSound("game-over", "sounds/game-over.wav");
-k.loadSound("select", "sounds/select.wav");
+k.loadSound("game-start", "sounds/game-start.mp3");
+k.loadSound("game-over", "sounds/game-over.mp3");
+k.loadSound("select1", "sounds/select1.mp3");
+k.loadSound("select2", "sounds/select2.mp3");
+k.loadSound("select3", "sounds/select3.mp3");
+k.loadSound("blade1", "sounds/blade1.mp3");
+k.loadSound("blade2", "sounds/blade2.mp3");
+k.loadSound("blade3", "sounds/blade3.mp3");
+k.loadSound("capture1", "sounds/capture1.mp3");
+k.loadSound("capture2", "sounds/capture2.mp3");
+k.loadSound("capture3", "sounds/capture3.mp3");
 
 let mainMenu = null
 let game = null
