@@ -2,7 +2,7 @@ import { GameObj, KAPLAYCtx } from "kaplay";
 import { lightenHex, menuTextColor, playerColors, playerTextColors } from "./styles";
 import { Player1OrPlayer2, Scores } from "./types";
 
-export function createHud(k: KAPLAYCtx<any, never>, misere: boolean, vsCpu:boolean) {
+export async function createHud(k: KAPLAYCtx<any, never>, misere: boolean, vsCpu:boolean) {
   const margin = 40;
 
   const uiLabel = k.add([
@@ -15,45 +15,65 @@ export function createHud(k: KAPLAYCtx<any, never>, misere: boolean, vsCpu:boole
     opacity(0)
   ]);
 
-  tween(0, 1, 0.7, (v) => uiLabel.opacity = v, k.easings.easeInOutExpo).onEnd(() => {
-    tween(uiLabel.pos, vec2(uiLabel.pos.x, margin), 0.8, (v) => uiLabel.pos = v, k.easings.easeInOutExpo);
-    tween(64, 32, 0.8, (v) => uiLabel.textSize = v, k.easings.easeInOutExpo);
-  });
+  const createScoreBadge = (player: Player1OrPlayer2, targetX: number) => {
+    const initialX = (width() / 2) + (player === 1 ? -60 : 60);
+    const initialY = (height() / 2) + 100;
+    const targetY = k.height() - margin * 1.5;
 
-  const createScoreBadge = (player: Player1OrPlayer2, xPos: number, anchorPoint: string) => {
     const container = k.add([
-      pos(xPos, k.height() - margin * 1.5),
-      anchor(anchorPoint as any),
+      pos(initialX, initialY),
+      anchor("center"),
       fixed(),
       z(10),
+      opacity(0),
     ]);
 
-    const label = vsCpu && player == 2 ? "CPU" : `P${player}`
+    const label = vsCpu && player == 2 ? "CPU" : `P${player}`;
     container.add([
       text(label, { font: "AdventProRegular", size: 24 }),
       anchor("center"),
-      pos(player == 1 ? -10 : 10, -20),
+      pos(0, -20),
       color(Color.fromHex(playerTextColors[player])),
+      opacity(),
     ]);
 
     const scoreLabel = container.add([
       text("0", { font: "AdventProRegular", size: 24 }),
       anchor("center"),
-      pos(player == 1 ? -10 : 10, +15),
+      pos(0, 15),
       color(Color.fromHex(playerTextColors[player])),
-      opacity(1),
+      opacity(),
     ]);
 
-    return scoreLabel;
+    return { container, scoreLabel, targetX, targetY };
   };
 
-  const p1ScoreLabel = createScoreBadge(1, margin + 20, "center");
-  const p2ScoreLabel = createScoreBadge(2, k.width() - margin - 20, "center");
+  const p1Data = createScoreBadge(1, margin + 20);
+  const p2Data = createScoreBadge(2, k.width() - margin - 20);
+
+  tween(0, 1, 0.7, (v) => {
+    uiLabel.opacity = v;
+    p1Data.container.opacity = v;
+    p2Data.container.opacity = v;
+    p1Data.container.children.forEach(child => child.opacity = v);
+    p2Data.container.children.forEach(child => child.opacity = v);
+  }, easings.easeInOutExpo);
+
+  await wait(1.5);
+
+  tween(uiLabel.pos, vec2(uiLabel.pos.x, margin), 0.8, (v) => uiLabel.pos = v, k.easings.linear);
+  tween(64, 32, 0.7, (v) => uiLabel.textSize = v, k.easings.linear);
+  tween(p1Data.container.pos, k.vec2(p1Data.targetX, p1Data.targetY), 0.7, (v) => p1Data.container.pos = v, k.easings.easeInOutSine);
+  tween(p2Data.container.pos, k.vec2(p2Data.targetX, p2Data.targetY), 0.7, (v) => p2Data.container.pos = v, k.easings.easeInOutSine);
+  await wait(0.4);
+
+  const p1ScoreLabel = p1Data.scoreLabel;
+  const p2ScoreLabel = p2Data.scoreLabel;
 
   if (misere) {
     add([
-      rect(60, 24, { radius: 4 }),
-      pos(k.width() - 111 + margin, margin),
+      rect(60, 24, { radius: 3 }),
+      pos(k.width() - 110 + margin, margin - 2),
       anchor("center"),
       color(Color.fromHex("#888888")),
       fixed(),
@@ -62,7 +82,7 @@ export function createHud(k: KAPLAYCtx<any, never>, misere: boolean, vsCpu:boole
 
     add([
       text("MlSERE", { font: "AdventProRegular", size: 20 }),
-      pos(k.width() - 70, margin),
+      pos(k.width() - 70, margin - 2),
       anchor("center"),
       color(WHITE),
       fixed(),

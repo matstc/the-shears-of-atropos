@@ -7,14 +7,14 @@ import { nodeFactory } from "./node";
 import { addBackground, playerColors } from "./styles";
 import { ExtendedEdge, GraphNode, Player1OrPlayer2, Scores } from "./types";
 
-export const createNewGame = function(k: KAPLAYCtx<any, never>, boardDimension:number, misere:boolean, vsCpu:boolean) {
+export const createNewGame = async function(k: KAPLAYCtx<any, never>, boardDimension:number, misere:boolean, vsCpu:boolean) {
   addBackground(k)
   k.play("start-game", { volume: 1 })
   let isPaused = false;
   let destroyPauseMenu: (() => void) | null = null;
   let currentPlayer:Player1OrPlayer2 = 1;
   const scores:Scores = { 1: 0, 2: 0 };
-  const hud = createHud(k, misere, vsCpu)
+  const hud = await createHud(k, misere, vsCpu)
   const minScreenDimension = Math.min(width(), height())
   const xOffset = (width() - minScreenDimension) / 2;
   const nodeRadius = Math.floor(minScreenDimension / boardDimension / (55 / boardDimension))

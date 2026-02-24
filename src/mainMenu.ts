@@ -98,7 +98,7 @@ export function createMenu(k: KAPLAYCtx<any, never>, onStart:(dimension:number, 
     () => { let index = dimensions.indexOf(dimension); index += 1; if (index >= dimensions.length) { index = 0 }; dimension = dimensions[index] },
   );
 
-  addMenuRow(yGap, "Versus CPU", "Against CPU or another player", () => vsCpu ? "YES" : "NO",
+  addMenuRow(yGap, "Versus CPU", "Against CPU or another player", () => vsCpu ? "CPU" : "P2",
   () => vsCpu = !vsCpu,
   () => vsCpu = !vsCpu
   );

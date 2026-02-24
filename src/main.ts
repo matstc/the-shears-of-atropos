@@ -21,8 +21,8 @@ k.scene("menu", () => {
   });
 });
 
-k.scene("game", ({ dimension, misere, vsCpu }) => {
-  const game = createNewGame(k, dimension, misere, vsCpu);
+k.scene("game", async ({ dimension, misere, vsCpu }) => {
+  const game = await createNewGame(k, dimension, misere, vsCpu);
 
   k.onUpdate(() => {
     game.onUpdate();
