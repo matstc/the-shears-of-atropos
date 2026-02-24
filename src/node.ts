@@ -36,7 +36,7 @@ export const nodeFactory = (opt: NodeOpt): GameObj => {
           this.outline.color = captureColor;
 
           const inside = this.add([
-            circle(opt.nodeRadius),
+            circle(node.radius),
             color(captureColor),
             anchor("center"),
             opacity(0),
