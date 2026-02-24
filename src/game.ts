@@ -1,7 +1,7 @@
 import { GameObj, KAPLAYCtx } from "kaplay";
 import { makeRandomMoveForCpu } from "./ai";
 import { edgeFactory } from "./edge";
-import { dotsAndBoxesFactory } from "./graph";
+import { createGraph } from "./graph";
 import { createHud } from "./hud";
 import { nodeFactory } from "./node";
 import { addBackground, playerColors } from "./styles";
@@ -18,7 +18,7 @@ export const createNewGame = async function(k: KAPLAYCtx<any, never>, boardDimen
   const minScreenDimension = Math.min(width(), height())
   const xOffset = (width() - minScreenDimension) / 2;
   const nodeRadius = Math.floor(minScreenDimension / boardDimension / (55 / boardDimension))
-  const { simulation, nodes: simulationNodes, edges: simulationEdges } = dotsAndBoxesFactory(boardDimension, minScreenDimension, minScreenDimension)
+  const { simulation, nodes: simulationNodes, edges: simulationEdges } = createGraph(boardDimension, minScreenDimension, width(), height())
   let isGameOver = false;
 
   const togglePause = () => {

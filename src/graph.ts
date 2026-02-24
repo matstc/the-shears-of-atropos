@@ -7,10 +7,11 @@ import {
 } from "d3-force";
 import { ExtendedEdge, GraphNodeWithPosition } from "./types.ts"
 
-export function dotsAndBoxesFactory(
+export function createGraph(
   n: number,
-  width: number = 1000,
-  height: number = 1000
+  minWidthOrHeight: number,
+  screenWidth: number,
+  screenHeight: number
 ): {
   simulation: Simulation<GraphNodeWithPosition, undefined>;
   nodes: GraphNodeWithPosition[];
@@ -20,9 +21,9 @@ export function dotsAndBoxesFactory(
   const edges: ExtendedEdge[] = [];
   const edgeSet = new Set<string>();
 
-  const cellSize = width / (n - 1 || 1);
-  const cx = width / 2;
-  const cy = height / 2;
+  const cellSize = minWidthOrHeight / (n - 1 || 1);
+  const cx = screenWidth / 2;
+  const cy = screenHeight / 2;
 
   const maxRotation = 15 * (Math.PI / 180);
   const angle = (Math.random() - 0.5) * 2 * maxRotation;
