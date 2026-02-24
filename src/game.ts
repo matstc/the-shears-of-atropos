@@ -110,6 +110,24 @@ export const createNewGame = async function(k: KAPLAYCtx<any, never>, boardDimen
 
       edge.pluck();
     });
+    edge.onHover(async () => {
+      if (isPaused || isGameOver) return;
+      if (vsCpu && currentPlayer === 2) return;
+
+      edge.activate();
+
+      if (isTouchscreen()) {
+        await wait(0.3);
+        edge.pluck()
+      }
+      setCursor("pointer");
+    })
+    edge.onHoverEnd(() => {
+      if (isTouchscreen()) return
+
+      edge.deactivate()
+      setCursor("default");
+    })
   })
 
   async function checkGameOver() {

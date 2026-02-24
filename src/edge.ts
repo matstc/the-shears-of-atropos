@@ -97,21 +97,6 @@ export const edgeFactory = (node1: GameObj, node2: GameObj, nodeRadius: number, 
     },
   ])
 
-  edge.onHover(async () => {
-    edge.activate();
-    if (isTouchscreen()) {
-      await wait(0.3);
-      edge.pluck()
-    }
-    setCursor("pointer");
-  })
-  edge.onHoverEnd(() => {
-    if (isTouchscreen()) return
-
-    edge.deactivate()
-    setCursor("default");
-  })
-
   node1.edges.push(edge)
   node2.edges.push(edge)
 
