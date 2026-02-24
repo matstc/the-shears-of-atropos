@@ -123,7 +123,9 @@ export const createNewGame = function(k: KAPLAYCtx<any, never>, boardDimension:n
       const dir = diff.unit();
       edgeObj.pos = n1.pos.add(dir.scale(nodeRadius));
       edgeObj.angle = dir.angle();
-      edgeObj.width = dist - 2 * nodeRadius;
+      const newWidth = dist - 2 * nodeRadius;
+      edgeObj.width = newWidth;
+      edgeObj.area.shape.width = newWidth;
     });
   }
 
