@@ -6,12 +6,16 @@ import { edgeColor } from "./styles"
 export type NodeOpt = {
   x: number
   y: number
+  onRemove: (node:GameObj) => void
+  boardDimension: number
+  screenDimension: number
 }
 
-export const nodeFactory = (opt: NodeOpt, onRemove: (node:GameObj) => void): GameObj => {
+export const nodeFactory = (opt: NodeOpt): GameObj => {
   const x = opt.x
   const y = opt.y
-  const radius = 30
+  const onRemove = opt.onRemove
+  const radius = Math.floor(opt.screenDimension / opt.boardDimension / (35 / opt.boardDimension))
 
   const node = add([
     circle(radius),
@@ -36,7 +40,7 @@ export const nodeFactory = (opt: NodeOpt, onRemove: (node:GameObj) => void): Gam
   ])
 
   node.add([
-    circle(radius - 1),
+    circle(Math.floor(radius - radius / 3)),
     color(WHITE),
     anchor("center"),
   ])

@@ -16,11 +16,12 @@ k.loadRoot("./"); // A good idea for Itch.io publishing later
 
 let currentPlayer:Player1OrPlayer2 = 1;
 const scores:Scores = { 1: 0, 2: 0 };
-const misere = true;
+const misere = false;
 const vsCPU = true;
 const hud = createHud(k, misere)
-
-const { simulation, nodes: simulationNodes, edges: simulationEdges } = dotsAndBoxesFactory(5)
+const boardDimension = 4
+const minScreenDimension = Math.min(width(), height())
+const { simulation, nodes: simulationNodes, edges: simulationEdges } = dotsAndBoxesFactory(boardDimension, minScreenDimension, minScreenDimension)
 
 const onRemoveNode = (sNode:GraphNode, node:GameObj) => {
   const idx = simulationNodes.indexOf(sNode);
@@ -55,7 +56,7 @@ const onRemoveEdge = (sEdge: GraphEdge, edge: GameObj) => {
   }
 };
 
-const nodeInstances = simulationNodes.map(n => nodeFactory({ x: n.x!, y: n.y! }, onRemoveNode.bind(null, n)));
+const nodeInstances = simulationNodes.map(n => nodeFactory({ x: n.x!, y: n.y!, boardDimension, screenDimension: minScreenDimension, onRemove: onRemoveNode.bind(null, n) }));
 const edgeInstances = simulationEdges.map(e => {
   const sIdx = (e.source as GraphNode).id;
   const tIdx = (e.target as GraphNode).id;
@@ -73,7 +74,7 @@ function checkGameOver() {
     }
 
     add([
-      text(`Game Over! ${winner} Wins!`, { size: 48 }),
+      text(`Game Over: ${winner} wins`, { size: 48 }),
       pos(width() / 2, height() / 2),
       anchor("center"),
       fixed(),

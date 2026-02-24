@@ -1,8 +1,10 @@
 # Todos
 
-- Add AI
 - Allow changing parameters
 - Allow restarting after game is over
+- Add better AI
+- Add SFX
+- Make more usable on mobile
 
 # Folder structure
 

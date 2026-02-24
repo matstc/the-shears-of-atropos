@@ -20,8 +20,7 @@ export function dotsAndBoxesFactory(
   const edges: ExtendedEdge[] = [];
   const edgeSet = new Set<string>();
 
-  const padding = 150;
-  const cellSize = (width - padding * 2) / (n - 1 || 1);
+  const cellSize = width / (n - 1 || 1);
   const cx = width / 2;
   const cy = height / 2;
 
@@ -32,8 +31,8 @@ export function dotsAndBoxesFactory(
 
   for (let r = 0; r < n; r++) {
     for (let c = 0; c < n; c++) {
-      const rawX = padding + c * cellSize + (Math.random() - 0.5) * 50;
-      const rawY = padding + r * cellSize + (Math.random() - 0.5) * 50;
+      const rawX = c * cellSize + (Math.random() - 0.5) * 50;
+      const rawY = r * cellSize + (Math.random() - 0.5) * 50;
 
       const dx = rawX - cx;
       const dy = rawY - cy;
@@ -65,7 +64,7 @@ export function dotsAndBoxesFactory(
   const simulation = forceSimulation<GraphNodeWithPosition>(nodes)
     .force("link", forceLink<GraphNodeWithPosition, ExtendedEdge>(edges)
       .id(d => d.id)
-      .distance(cellSize * 0.8)
+      .distance(cellSize * 0.65)
       .strength(0.8)
     )
     .force("charge", forceManyBody().strength(-cellSize))
