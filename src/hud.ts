@@ -33,6 +33,7 @@ export function createHud(k: KAPLAYCtx<any, never>, misere: boolean) {
       anchor("center"),
       pos(player == 1 ? -10 : 10, +15),
       color(Color.fromHex(playerTextColors[player])),
+      opacity(1),
     ]);
 
     return scoreLabel;
@@ -62,12 +63,21 @@ export function createHud(k: KAPLAYCtx<any, never>, misere: boolean) {
   }
 
   return {
-    update: (currentPlayer: Player1OrPlayer2, scores: Scores) => {
+    update: async (currentPlayer: Player1OrPlayer2, scores: Scores) => {
       uiLabel.text = `GO PLAYER ${currentPlayer}`;
       uiLabel.color = k.Color.fromHex(playerColors[currentPlayer]);
 
-      p1ScoreLabel.text = `${scores[1]}`;
-      p2ScoreLabel.text = `${scores[2]}`;
+      if (p1ScoreLabel.text !== `${scores[1]}`) {
+        await wait(0.5)
+        p1ScoreLabel.text = `${scores[1]}`;
+        k.tween(0, 1, 1, (v) => p1ScoreLabel.opacity = v, k.easings.easeOutQuad);
+      }
+
+      if (p2ScoreLabel.text !== `${scores[2]}`) {
+        await wait(0.5)
+        p2ScoreLabel.text = `${scores[2]}`;
+        k.tween(0, 1, 1, (v) => p2ScoreLabel.opacity = v, k.easings.easeOutQuad);
+      }
     },
     showGameOver: (winner: Player1OrPlayer2 | null) => {
       uiLabel.text = "GAME OVER";
