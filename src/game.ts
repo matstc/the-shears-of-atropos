@@ -9,7 +9,7 @@ import { ExtendedEdge, GraphNode, Player1OrPlayer2, Scores } from "./types";
 
 export const createNewGame = async function(k: KAPLAYCtx<any, never>, boardDimension:number, misere:boolean, vsCpu:boolean) {
   addBackground(k)
-  k.play("game-start", { volume: 0.7 })
+  k.play("game-start", { volume: 0.5 })
   let isPaused = false;
   let destroyPauseMenu: (() => void) | null = null;
   let currentPlayer:Player1OrPlayer2 = 1;
@@ -122,7 +122,7 @@ export const createNewGame = async function(k: KAPLAYCtx<any, never>, boardDimen
       }
 
       hud.showGameOver(winner)
-      k.play("game-over", { volume: 0.4 });
+      k.play("game-over", { volume: 0.3 });
       await wait(1)
     }
   }
