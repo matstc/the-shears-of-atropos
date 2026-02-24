@@ -7,11 +7,11 @@ export const edgeColor = "#000000"
 export const nodeColor = "#000000"
 export const playerColors:Record<Player1OrPlayer2, string> = {
   1: "#ffffff",
-  2: "#888888",
+  2: "#d46363",
 };
 export const playerTextColors:Record<Player1OrPlayer2, string> = {
   1: "#ffffff",
-  2: "#888888",
+  2: "#d46363",
 }
 
 export function lightenHex(hex: string, percent: number): string {
