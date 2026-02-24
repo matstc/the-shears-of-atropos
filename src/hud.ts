@@ -8,6 +8,7 @@ export async function createHud(k: KAPLAYCtx<any, never>, misere: boolean, vsCpu
   let pauseMenuRoot:GameObj|null = null;
   let gameOverRoot:GameObj|null = null;
   let misereBadge:GameObj|null = null;
+  let lastCurrentPlayer:Player1OrPlayer2 = 1;
   const getLabelTopPos = () => k.vec2(k.width() / 2, margin);
   const getLabelCenterPos = () => k.vec2(k.width() / 2, k.height() / 2);
   const getP1TargetPos = () => k.vec2(margin + 20, k.height() - margin * 1.5);
@@ -88,8 +89,8 @@ export async function createHud(k: KAPLAYCtx<any, never>, misere: boolean, vsCpu
 
   if (misere) {
     misereBadge = k.add([
-      k.pos(getMisereBadgePos()),
-      k.anchor("center"),
+      pos(getMisereBadgePos()),
+      anchor("center"),
     ])
 
     misereBadge.add([
@@ -111,21 +112,54 @@ export async function createHud(k: KAPLAYCtx<any, never>, misere: boolean, vsCpu
     ]);
   }
 
+  const turnIndicator = add([
+    circle(50, { fill: false }),
+    anchor("center"),
+    pos(getP1TargetPos()),
+    outline(1, k.Color.fromHex(playerColors[1])),
+    opacity(1),
+    z(5),
+  ]);
+
   return {
     update: async (currentPlayer: Player1OrPlayer2, scores: Scores) => {
-      uiLabel.text = `GO PLAYER ${currentPlayer}`;
-      uiLabel.color = k.Color.fromHex(playerColors[currentPlayer]);
+      tween(uiLabel.opacity, 0, 0.2, (v) => uiLabel.opacity = v).onEnd(() => {
+        uiLabel.text = `GO PLAYER ${currentPlayer}`;
+        uiLabel.color = k.Color.fromHex(playerColors[currentPlayer]);
+
+        tween(0, 1, 0.4, (v) => uiLabel.opacity = v, k.easings.easeOutQuad);
+      });
+
+      lastCurrentPlayer = currentPlayer;
+      const targetPos = currentPlayer === 1 ? getP1TargetPos() : getP2TargetPos();
+      const targetColor = k.Color.fromHex(playerColors[currentPlayer]);
+
+      tween(
+        turnIndicator.pos,
+        targetPos,
+        0.6,
+        (v) => turnIndicator.pos = v,
+        k.easings.easeInOutCubic
+      );
+
+      tween(
+        turnIndicator.outline.color,
+        targetColor,
+        0.6,
+        (v) => turnIndicator.outline.color = v,
+        easings.easeInCubic
+      );
 
       if (p1ScoreLabel.text !== `${scores[1]}`) {
         await wait(0.5)
         p1ScoreLabel.text = `${scores[1]}`;
-        k.tween(0, 1, 1, (v) => p1ScoreLabel.opacity = v, k.easings.easeOutQuad);
+        tween(0, 1, 1, (v) => p1ScoreLabel.opacity = v, k.easings.easeOutQuad);
       }
 
       if (p2ScoreLabel.text !== `${scores[2]}`) {
         await wait(0.5)
         p2ScoreLabel.text = `${scores[2]}`;
-        k.tween(0, 1, 1, (v) => p2ScoreLabel.opacity = v, k.easings.easeOutQuad);
+        tween(0, 1, 1, (v) => p2ScoreLabel.opacity = v, k.easings.easeOutQuad);
       }
     },
     showGameOver: (winner: Player1OrPlayer2 | null) => {
@@ -246,6 +280,9 @@ export async function createHud(k: KAPLAYCtx<any, never>, misere: boolean, vsCpu
       if (misereBadge) {
         misereBadge.pos = getMisereBadgePos();
       }
+
+      const currentPos = lastCurrentPlayer === 1 ? getP1TargetPos() : getP2TargetPos();
+      turnIndicator.pos = currentPos;
 
       uiLabel.pos = getLabelTopPos();
       p1.container.pos = getP1TargetPos();
