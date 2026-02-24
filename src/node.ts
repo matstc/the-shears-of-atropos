@@ -9,6 +9,7 @@ export type NodeOpt = {
   nodeRadius: number
   onRemove: (node:GameObj) => void
   boardDimension: number
+  getCurrentColor: () => string
 }
 
 export const nodeFactory = (opt: NodeOpt): GameObj => {
@@ -33,6 +34,19 @@ export const nodeFactory = (opt: NodeOpt): GameObj => {
         this.edges = this.edges.filter((x:GameObj) => x !== edge)
         if (this.edges.length === 0) {
           this.isCaptured = true;
+          const captureColor = Color.fromHex(opt.getCurrentColor());
+          this.outline.color = captureColor;
+
+          const inside = this.add([
+            circle(opt.nodeRadius),
+            color(captureColor),
+            anchor("center"),
+            opacity(0),
+            z(4),
+          ]);
+
+          tween(0, 1, 0.8, (val) => inside.opacity = val, easings.linear);
+
           onRemove(node)
         }
       }

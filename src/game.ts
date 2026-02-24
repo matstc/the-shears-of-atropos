@@ -58,7 +58,6 @@ export const createNewGame = function(k: KAPLAYCtx<any, never>, boardDimension:n
     });
 
     k.tween(1, 0.3, duration, (val) => node.opacity = val, k.easings.easeInQuart);
-    k.tween(node.radius, node.radius * 1.5, duration, (val) => node.radius = val, k.easings.easeInQuart);
   }
 
   const onRemoveEdge = (sEdge: ExtendedEdge, edge: GameObj) => {
@@ -87,7 +86,7 @@ export const createNewGame = function(k: KAPLAYCtx<any, never>, boardDimension:n
     }
   };
 
-  const nodeInstances = simulationNodes.map(n => nodeFactory({ x: n.x! + xOffset, y: n.y!, nodeRadius, boardDimension, onRemove: onRemoveNode.bind(null, n) }));
+  const nodeInstances = simulationNodes.map(n => nodeFactory({ x: n.x! + xOffset, y: n.y!, nodeRadius, boardDimension, onRemove: onRemoveNode.bind(null, n), getCurrentColor: () => playerColors[currentPlayer] }));
   const edgeInstances = simulationEdges.map(e => {
     const sIdx = (e.source as GraphNode).id;
     const tIdx = (e.target as GraphNode).id;

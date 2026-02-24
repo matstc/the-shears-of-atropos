@@ -136,7 +136,7 @@ export function createHud(k: KAPLAYCtx<any, never>, misere: boolean) {
       const overlay = k.add([
         k.rect(k.width(), k.height()),
         k.color(0, 0, 0),
-        k.opacity(0.5),
+        k.opacity(0.3),
         k.fixed(),
         k.z(100),
       ]);
