@@ -50,7 +50,7 @@ export function createMenu(k: KAPLAYCtx<any, never>, onStart:(dimension:number, 
 
   helpTextLines.map((line, i) => {
     lineContainer.add([
-      text(line, { font: "AdventProRegular", size: 20 }),
+      text(line, { font: "AdventProRegular", size: width() < 375 ? 19 : 20 }),
       pos(0, lineContainer.pos.y + i * 25),
       color(lightenHex(menuTextColor, 30)),
       fixed()
@@ -168,9 +168,10 @@ export function createMenu(k: KAPLAYCtx<any, never>, onStart:(dimension:number, 
   () => isMisere = !isMisere
   );
 
+  const startBtnHeight = height() < 635 ? height() - menu.pos.y - 20 : Math.max(yGap * 4.7, height() / 2.2)
   const startBtn = menu.add([
     text("Start Game", { font: "AdventProRegular", size: 32 }),
-    pos(menuXOffset, Math.max(yGap * 4.7, height() / 2.2)),
+    pos(menuXOffset, startBtnHeight),
     anchor("center"),
     color(textColor),
     area()
