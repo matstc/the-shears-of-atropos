@@ -23,6 +23,10 @@ const isCapturable = (node:GameObj) => {
   return !node.isGround && node.edges.length === 1;
 }
 
+const willBeCapturable = (node:GameObj) => {
+  return !node.isGround && node.edges.length === 2;
+}
+
 export async function makeRandomMoveForCpu(edgeInstances: GameObj[], _isMisere: boolean) {
   if (edgeInstances.length === 0) return;
 
@@ -49,6 +53,34 @@ export async function makeAverageMoveForCpu(edgeInstances: GameObj[], isMisere:b
     }
   }
 
-  // Have not found a good move
+  console.log("Making random move")
   play(list[0]);
+}
+
+export async function makeProMoveForCpu(edgeInstances: GameObj[], isMisere:boolean) {
+  if (edgeInstances.length === 0) return;
+
+  const list = shuffleArray([...edgeInstances])
+
+  for (const edge of list) {
+    if (!isMisere && (isCapturable(edge.node1) || isCapturable(edge.node2))) {
+      play(edge);
+      return
+    }
+  }
+
+  for (const edge of list) {
+    if (!isMisere && !willBeCapturable(edge.node1) && !willBeCapturable(edge.node2)) {
+      play(edge);
+      return
+    }
+
+    const isSettingUpOpponent = willBeCapturable(edge.node1) || willBeCapturable(edge.node2);
+    if (isMisere && !isCapturable(edge.node1) && !isCapturable(edge.node2) && !isSettingUpOpponent) {
+      play(edge);
+      return
+    }
+  }
+
+  makeAverageMoveForCpu(edgeInstances, isMisere);
 }

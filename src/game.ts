@@ -1,5 +1,5 @@
 import { GameObj, KAPLAYCtx } from "kaplay";
-import { makeAverageMoveForCpu, makeRandomMoveForCpu } from "./ai";
+import { makeAverageMoveForCpu, makeProMoveForCpu, makeRandomMoveForCpu } from "./ai";
 import { edgeFactory } from "./edge";
 import { createGraph } from "./graph";
 import { createHud } from "./hud";
@@ -94,6 +94,8 @@ export const createNewGame = async function(k: KAPLAYCtx<any, never>, boardDimen
         makeRandomMoveForCpu(edgeInstances, misere);
       } else if (cpuAlgorithm === "AVG") {
         makeAverageMoveForCpu(edgeInstances, misere);
+      } else if (cpuAlgorithm === "PRO") {
+        makeProMoveForCpu(edgeInstances, misere);
       } else {
         throw new Error(`No CPU algorithm found: ${cpuAlgorithm}`);
       }

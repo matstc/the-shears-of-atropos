@@ -1,10 +1,10 @@
 import { KAPLAYCtx } from "kaplay";
 import "kaplay/global"
-import { addBackground, lightenHex, menuTextColor, playRandomSound } from "./styles";
+import { addBackground, lightenHex, menuTextColor } from "./styles";
 
 const dimensions = [4, 9, 16, 25, 36];
 let dimension = 16;
-const cpuAlgorithms = ["RND", "AVG"];
+const cpuAlgorithms = ["RND", "AVG", "PRO"];
 let cpuAlgorithm = "AVG";
 let isMisere = false;
 let vsCpu = true;
