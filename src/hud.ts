@@ -1,5 +1,5 @@
 import { GameObj, KAPLAYCtx } from "kaplay";
-import { backgroundColor, lightenHex, menuTextColor, playerColors, playerTextColors, playRandomSound } from "./styles";
+import { backgroundColor, lightenHex, menuTextColor, playerColors } from "./styles";
 import { Player1OrPlayer2, Scores } from "./types";
 
 export async function createHud(k: KAPLAYCtx<any, never>, misere: boolean, vsCpu:boolean) {
@@ -50,7 +50,7 @@ export async function createHud(k: KAPLAYCtx<any, never>, misere: boolean, vsCpu
       text(label, { font: "AdventProRegular", size: 24 }),
       anchor("center"),
       pos(0, -20),
-      color(Color.fromHex(playerTextColors[player])),
+      color(Color.fromHex(playerColors[player])),
       opacity(),
     ]);
 
@@ -58,7 +58,7 @@ export async function createHud(k: KAPLAYCtx<any, never>, misere: boolean, vsCpu
       text("0", { font: "AdventProRegular", size: 24 }),
       anchor("center"),
       pos(0, 15),
-      color(Color.fromHex(playerTextColors[player])),
+      color(Color.fromHex(playerColors[player])),
       opacity(),
     ]);
 

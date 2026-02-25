@@ -37,8 +37,8 @@ export function createMenu(k: KAPLAYCtx<any, never>, onStart:(dimension:number, 
   ]);
 
   const helpTextLines = [
-    "Collect lives by cutting the connecting threads.",
-    "One cut at a time. After collecting a life, cut again."
+    "Collect lives by cutting all their connecting threads.",
+    "One cut per turn but if you collect a life, cut again."
   ]
 
   const menuXOffset = Math.min(200, width() / 2 - 10)

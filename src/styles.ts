@@ -3,17 +3,13 @@ import { Player1OrPlayer2 } from "./types";
 
 export const menuTextColor = "#333333";
 export const backgroundColor = "#dddddd";
-export const edgeColor = "#000000";
-export const nodeColor = "#000000";
+export const edgeColor = "#333333";
+export const nodeColor = "#333333";
 
 export const playerColors:Record<Player1OrPlayer2, string> = {
   1: "#ffffff",
   2: "#d46363",
 };
-export const playerTextColors:Record<Player1OrPlayer2, string> = {
-  1: "#ffffff",
-  2: "#d46363",
-}
 
 export function lightenHex(hex: string, percent: number): string {
   const cleanHex = hex.replace("#", "");
