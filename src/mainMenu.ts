@@ -2,17 +2,19 @@ import { KAPLAYCtx } from "kaplay";
 import "kaplay/global"
 import { addBackground, lightenHex, menuTextColor, playRandomSound } from "./styles";
 
-const dimensions = [4, 9, 16, 25, 36]
+const dimensions = [4, 9, 16, 25, 36];
 let dimension = 16;
+const cpuAlgorithms = ["RND", "AVG", "PRO"];
+let cpuAlgorithm = "AVG";
 let isMisere = false;
 let vsCpu = true;
 
-export function createMenu(k: KAPLAYCtx<any, never>, onStart:(dimension:number, misere:boolean, vsCpu:boolean) => void) {
+export function createMenu(k: KAPLAYCtx<any, never>, onStart:(dimension:number, misere:boolean, vsCpu:boolean, cpuAlgorithm:string) => void) {
   addBackground(k)
   k.play("game-start", { volume: 0 })
   const textColor = Color.fromHex(menuTextColor)
   const yGap = 85;
-  const getTitleSize = () => width() < 420 ? 37 : width() < 1024 ? 41 : 64
+  const getTitleSize = () => width() < 400 ? 37 : width() < 420 ? 40 : width() < 1024 ? 41 : 64
   const threadColors = [WHITE, Color.fromHex("#eeeeee"), Color.fromHex("#f1f1f1")]
   if (width() > 1024) {
     for (let i = 0; i < 5; i++) {
@@ -39,7 +41,7 @@ export function createMenu(k: KAPLAYCtx<any, never>, onStart:(dimension:number, 
     "One cut at a time. After collecting a life, cut again."
   ]
 
-  const menuXOffset = Math.min(200, width() / 2 - 6)
+  const menuXOffset = Math.min(200, width() / 2 - 10)
 
   const lineContainer = add([
     pos(k.width() / 2 - menuXOffset, width() < 1024 ? 60 : 90),
@@ -156,21 +158,26 @@ export function createMenu(k: KAPLAYCtx<any, never>, onStart:(dimension:number, 
   () => vsCpu = !vsCpu
   );
 
-  addMenuRow(yGap * 2, "Misere", "Collect as few lives as possible", () => isMisere ? "YES" : "NO",
+  addMenuRow(yGap * 2, "Algorithm", "How strong should CPU play", () => cpuAlgorithm,
+  () => { let index = cpuAlgorithms.indexOf(cpuAlgorithm); index -= 1; if (index < 0) { index = cpuAlgorithms.length - 1 }; cpuAlgorithm = cpuAlgorithms[index] },
+  () => { let index = cpuAlgorithms.indexOf(cpuAlgorithm); index += 1; if (index >= cpuAlgorithms.length) { index = 0 }; cpuAlgorithm = cpuAlgorithms[index] },
+  );
+
+  addMenuRow(yGap * 3, "Misere", "Collect as few lives as possible", () => isMisere ? "YES" : "NO",
   () => isMisere = !isMisere,
   () => isMisere = !isMisere
   );
 
   const startBtn = menu.add([
     text("Start Game", { font: "AdventProRegular", size: 32 }),
-    pos(menuXOffset, yGap * 4.5),
+    pos(menuXOffset, Math.max(yGap * 4.7, height() / 2.2)),
     anchor("center"),
     color(textColor),
     area()
   ]);
 
   startBtn.onClick(() => {
-    onStart(Math.floor(Math.sqrt(dimension)), isMisere, vsCpu)
+    onStart(Math.floor(Math.sqrt(dimension)), isMisere, vsCpu, cpuAlgorithm)
   });
 
   [startBtn].forEach(btn => {

@@ -1,13 +1,13 @@
 import { GameObj, KAPLAYCtx } from "kaplay";
-import { makeRandomMoveForCpu } from "./ai";
+import { makeAverageMoveForCpu, makeRandomMoveForCpu } from "./ai";
 import { edgeFactory } from "./edge";
 import { createGraph } from "./graph";
 import { createHud } from "./hud";
 import { nodeFactory } from "./node";
 import { addBackground, playerColors, playRandomSound } from "./styles";
-import { ExtendedEdge, GraphNode, Player1OrPlayer2, Scores } from "./types";
+import { CpuAlgorithm, ExtendedEdge, GraphNode, Player1OrPlayer2, Scores } from "./types";
 
-export const createNewGame = async function(k: KAPLAYCtx<any, never>, boardDimension:number, misere:boolean, vsCpu:boolean) {
+export const createNewGame = async function(k: KAPLAYCtx<any, never>, boardDimension:number, misere:boolean, vsCpu:boolean, cpuAlgorithm:CpuAlgorithm) {
   addBackground(k)
   k.play("game-start", { volume: 0.5 })
   let isPaused = false;
@@ -87,7 +87,13 @@ export const createNewGame = async function(k: KAPLAYCtx<any, never>, boardDimen
     simulation.alpha(0.03).restart();
 
     if (vsCpu && currentPlayer === 2) {
-      makeRandomMoveForCpu(edgeInstances, misere);
+      if (cpuAlgorithm === "RND") {
+        makeRandomMoveForCpu(edgeInstances, misere);
+      } else if (cpuAlgorithm === "AVG") {
+        makeAverageMoveForCpu(edgeInstances, misere);
+      } else {
+        throw new Error(`No CPU algorithm found: ${cpuAlgorithm}`);
+      }
     }
   };
 

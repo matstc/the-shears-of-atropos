@@ -28,13 +28,13 @@ let mainMenu = null
 let game = null
 
 k.scene("menu", () => {
-  mainMenu = createMenu(k, (dimension, misere, vsCpu) => {
-    k.go("game", { dimension, misere, vsCpu });
+  mainMenu = createMenu(k, (dimension, misere, vsCpu, cpuAlgorithm) => {
+    k.go("game", { dimension, misere, vsCpu, cpuAlgorithm });
   });
 });
 
-k.scene("game", async ({ dimension, misere, vsCpu }) => {
-  game = await createNewGame(k, dimension, misere, vsCpu);
+k.scene("game", async ({ dimension, misere, vsCpu, cpuAlgorithm }) => {
+  game = await createNewGame(k, dimension, misere, vsCpu, cpuAlgorithm);
 
   k.onUpdate(() => {
     game.onUpdate();
@@ -47,8 +47,6 @@ window.addEventListener("resize", () => {
   clearTimeout(resizeTimeout);
 
   resizeTimeout = window.setTimeout(() => {
-    console.log("Resize finished - Restarting Menu");
-
     const scene = k.getSceneName()
     if (scene === "menu") {
       k.go("menu");

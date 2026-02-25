@@ -22,3 +22,5 @@ export interface ExtendedEdge {
   source: number;
   target: number;
 }
+
+export type CpuAlgorithm = "RND" | "AVG" | "PRO"
