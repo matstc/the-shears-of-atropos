@@ -1,5 +1,5 @@
 import { GameObj, KAPLAYCtx } from "kaplay";
-import { makeAverageMoveForCpu, makeProMoveForCpu, makeRandomMoveForCpu } from "./ai";
+import { makeAverageMoveForCpu, makeRandomMoveForCpu } from "./ai";
 import { edgeFactory } from "./edge";
 import { createGraph } from "./graph";
 import { createHud } from "./hud";
@@ -17,7 +17,7 @@ export const createNewGame = async function(k: KAPLAYCtx<any, never>, boardDimen
   const hud = await createHud(k, misere, vsCpu)
   let minScreenDimension = Math.min(width(), height())
   let xOffset = (width() - minScreenDimension) / 2;
-  const getNodeRadius = () => Math.max(Math.floor(Math.min(width(), height()) / boardDimension / (75 / boardDimension)), 8);
+  const getNodeRadius = () => Math.max(Math.floor(Math.min(width(), height()) / boardDimension / (75 / boardDimension)), 10);
   let nodeRadius = getNodeRadius()
   const { simulation, nodes: simulationNodes, edges: simulationEdges, onResize: simulationOnResize } = createGraph(boardDimension, minScreenDimension, width(), height())
   let isGameOver = false;
@@ -45,6 +45,8 @@ export const createNewGame = async function(k: KAPLAYCtx<any, never>, boardDimen
 
     const objIdx = nodeInstances.indexOf(node);
     if (objIdx > -1) nodeInstances.splice(objIdx, 1);
+
+    if (node.isGround) return;
 
     const targetX = currentPlayer === 1 ? 0 : k.width();
     const targetY = k.height();
@@ -129,14 +131,18 @@ export const createNewGame = async function(k: KAPLAYCtx<any, never>, boardDimen
       if (isPaused || isGameOver) return;
       if (vsCpu && currentPlayer === 2) return;
 
+      setCursor("pointer");
       edge.activate();
+      edgeInstances.map(e => { if (e !== edge) e.deactivate() } )
 
       if (isTouchscreen()) {
         console.log("touch screen detected so will cut on hover");
         await wait(0.3);
-        edge.pluck()
+
+        if (edge.active) {
+          edge.pluck()
+        }
       }
-      setCursor("pointer");
     })
     edge.onHoverEnd(() => {
       if (isTouchscreen()) return
@@ -194,7 +200,7 @@ export const createNewGame = async function(k: KAPLAYCtx<any, never>, boardDimen
       const dir = diff.unit();
       edgeObj.pos = n1.pos.add(dir.scale(nodeRadius));
       edgeObj.angle = dir.angle();
-      const newWidth = dist - 2 * nodeRadius;
+      const newWidth = dist - 2 * nodeRadius + 1;
       edgeObj.width = newWidth;
       edgeObj.area.shape.width = newWidth;
     });
