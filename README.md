@@ -2,7 +2,6 @@
 
 - test ties
 - Add better AI (and setting?)
-- fix select sounds
 
 ![](screenshot.png)
 

@@ -1,5 +1,5 @@
 import { GameObj, KAPLAYCtx } from "kaplay";
-import { lightenHex, menuTextColor, playerColors, playerTextColors, playRandomSound } from "./styles";
+import { backgroundColor, lightenHex, menuTextColor, playerColors, playerTextColors, playRandomSound } from "./styles";
 import { Player1OrPlayer2, Scores } from "./types";
 
 export async function createHud(k: KAPLAYCtx<any, never>, misere: boolean, vsCpu:boolean) {
@@ -249,9 +249,15 @@ export async function createHud(k: KAPLAYCtx<any, never>, misere: boolean, vsCpu
         k.z(101),
       ]);
 
-      const addButton = (label: string, y: number, onClick: () => void) => {
+      pauseMenuRoot.add([
+        k.circle(150),
+        k.color(k.Color.fromHex(backgroundColor)),
+        k.anchor("center"),
+      ]);
+
+      const addButton = (label: string, y: number, size:number, onClick: () => void) => {
         const btn = pauseMenuRoot!.add([
-          k.text(label, { font: "AdventProRegular", size: 32 }),
+          k.text(label, { font: "AdventProRegular", size }),
           k.pos(0, y),
           k.color(k.Color.fromHex(menuTextColor)),
           k.anchor("center"),
@@ -264,8 +270,8 @@ export async function createHud(k: KAPLAYCtx<any, never>, misere: boolean, vsCpu
         return btn;
       };
 
-      addButton("Resume", -40, onResume);
-      addButton("Back to menu", 40, () => { play("select"); k.go("menu") });
+      addButton("Resume", -40, 32, onResume);
+      addButton("← Back to menu", 40, 24, () => { play("select"); k.go("menu") });
 
       return () => {
         pauseOverlay!.destroy();
