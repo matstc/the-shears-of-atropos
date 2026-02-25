@@ -134,6 +134,7 @@ export const createNewGame = async function(k: KAPLAYCtx<any, never>, boardDimen
       edge.activate();
 
       if (isTouchscreen()) {
+        console.log("touch screen detected so will cut on hover");
         await wait(0.3);
         edge.pluck()
       }
@@ -170,16 +171,21 @@ export const createNewGame = async function(k: KAPLAYCtx<any, never>, boardDimen
     const padding = Math.min(width(), height()) * 0.1;
 
     nodeInstances.forEach((obj, i) => {
-      if (obj.isCaptured || obj.isGround) return;
+      if (obj.isCaptured) return;
 
-      const simNode = simulationNodes[i];
+      if (obj.isGround) {
+        const simNode = simulationNodes[i];
+        obj.pos.x = simNode.fx;
+        obj.pos.y = simNode.fy;
+      } else {
+        const simNode = simulationNodes[i];
+        const targetX = simNode.x || 0;
+        const targetY = simNode.y || 0;
 
-      const targetX = simNode.x || 0;
-      const targetY = simNode.y || 0;
-
-      obj.radius = nodeRadius;
-      obj.pos.x = lerp(obj.pos.x, Math.max(padding, Math.min(width() - padding, targetX)), smoothness);
-      obj.pos.y = lerp(obj.pos.y, Math.max(padding, Math.min(height() - padding, targetY)), smoothness);
+        obj.radius = nodeRadius;
+        obj.pos.x = lerp(obj.pos.x, Math.max(padding, Math.min(width() - padding, targetX)), smoothness);
+        obj.pos.y = lerp(obj.pos.y, Math.max(padding, Math.min(height() - padding, targetY)), smoothness);
+      }
     });
 
     edgeInstances.forEach((edgeObj) => {

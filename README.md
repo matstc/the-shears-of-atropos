@@ -2,7 +2,6 @@
 
 - test ties
 - Add better AI (and setting?)
-- not enough space on mobile for 25/36
 - able to cut multiple strings in one cut on mobile
 - title screen could look better ~414px wide
 - fix select sounds

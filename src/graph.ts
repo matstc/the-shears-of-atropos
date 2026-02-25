@@ -26,61 +26,35 @@ export function createGraph(
   const cx = screenWidth / 2;
   const cy = screenHeight / 2;
   const jitterScale = minWidthOrHeight / 2000;
-  const maxRotation = 15 * (Math.PI / 180);
-  const angle = (Math.random() - 0.5) * 2 * maxRotation * jitterScale;
-  const cos = Math.cos(angle);
-  const sin = Math.sin(angle);
 
   for (let r = 0; r < n; r++) {
     for (let c = 0; c < n; c++) {
       const rawX = c * cellSize + (Math.random() - 0.5) * 50 * jitterScale;
       const rawY = r * cellSize + (Math.random() - 0.5) * 50 * jitterScale;
-
       const dx = rawX - cx;
       const dy = rawY - cy;
-
-      nodes.push({
-        id: r * n + c,
-        x: cx + (dx * cos - dy * sin),
-        y: cy + (dx * sin + dy * cos)
-      });
+      nodes.push({ id: r * n + c, x: cx + dx, y: cy + dy });
     }
   }
 
   let groundId = n * n;
   const groundMargin = 150;
+  const getGroundPos = (r: number, c: number, w: number, h: number) => {
+    const hRatio = c / (n - 1);
+    const vRatio = r / (n - 1);
+    let gx, gy;
+    if (r === 0) { gy = -groundMargin; gx = (c === 0) ? -groundMargin : (c === n - 1) ? w + groundMargin : hRatio * w; }
+    else if (r === n - 1) { gy = h + groundMargin; gx = (c === 0) ? -groundMargin : (c === n - 1) ? w + groundMargin : hRatio * w; }
+    else if (c === 0) { gx = -groundMargin; gy = vRatio * h; }
+    else { gx = w + groundMargin; gy = vRatio * h; }
+    return { gx, gy };
+  };
 
   for (let r = 0; r < n; r++) {
     for (let c = 0; c < n; c++) {
       if (r === 0 || r === n - 1 || c === 0 || c === n - 1) {
-        let gx, gy;
-
-        const hRatio = c / (n - 1);
-        const vRatio = r / (n - 1);
-
-        if (r === 0) { // Top Edge
-          gy = -groundMargin;
-          gx = (c === 0) ? -groundMargin : (c === n - 1) ? screenWidth + groundMargin : hRatio * screenWidth;
-        } else if (r === n - 1) { // Bottom Edge
-          gy = screenHeight + groundMargin;
-          gx = (c === 0) ? -groundMargin : (c === n - 1) ? screenWidth + groundMargin : hRatio * screenWidth;
-        } else if (c === 0) { // Left Edge
-          gx = -groundMargin;
-          gy = vRatio * screenHeight;
-        } else { // Right Edge
-          gx = screenWidth + groundMargin;
-          gy = vRatio * screenHeight;
-        }
-
-        nodes.push({
-          id: groundId,
-          x: gx,
-          y: gy,
-          fx: gx,
-          fy: gy,
-          isGround: true
-        });
-
+        const { gx, gy } = getGroundPos(r, c, screenWidth, screenHeight);
+        nodes.push({ id: groundId, x: gx, y: gy, fx: gx, fy: gy, isGround: true, gridR: r, gridC: c } as any);
         edges.push({ source: r * n + c, target: groundId });
         groundId++;
       }
@@ -89,10 +63,7 @@ export function createGraph(
 
   const addEdge = (u: number, v: number) => {
     const key = u < v ? `${u}-${v}` : `${v}-${u}`;
-    if (!edgeSet.has(key)) {
-      edges.push({ source: u, target: v });
-      edgeSet.add(key);
-    }
+    if (!edgeSet.has(key)) { edges.push({ source: u, target: v }); edgeSet.add(key); }
   };
 
   for (let r = 0; r < n; r++) {
@@ -103,35 +74,48 @@ export function createGraph(
     }
   }
 
+  const linkForce = forceLink<GraphNodeWithPosition, ExtendedEdge>(edges).id(d => d.id);
   const simulation = forceSimulation<GraphNodeWithPosition>(nodes);
+  const manyBody = forceManyBody();
+  const fX = forceX(cx).strength(0.1);
+  const fY = forceY(cy).strength(0.1);
 
-  const applyForces = function (coefficient:number, x:number, y:number) {
-    const linkForce = forceLink<GraphNodeWithPosition, ExtendedEdge>(edges)
-    .id(d => d.id)
-    .distance(coefficient)
-    .strength(d => {
-      const isGroundEdge = (d.source as any).isGround || (d.target as any).isGround;
-      return isGroundEdge ? 0.01 : 0.05;
-    });
+  simulation.force("link", linkForce).force("charge", manyBody).force("x", fX).force("y", fY);
 
-    const manyBody = forceManyBody().strength(-coefficient * 3.5);
+  const applyForces = (coefficient: number, x: number, y: number) => {
+    linkForce.distance(coefficient).strength(0.01);
+    let manyBodyValue = - coefficient * 3.5
+    if (coefficient < 100) {
+      manyBodyValue = - coefficient * 2
+    }
+    manyBody.strength(manyBodyValue);
+    fX.x(x);
+    fY.y(y);
 
-    return simulation.force("link", linkForce)
-    .force("charge", manyBody)
-    .force("x", forceX(x).strength(0.12))
-    .force("y", forceY(y).strength(0.12))
-  }
+    return simulation;
+  };
 
-  applyForces(cellSize, cx, cy).stop()
+  applyForces(cellSize, cx, cy).stop();
 
   return {
     simulation,
     nodes,
     edges,
     onResize: (newMinDimension: number, newCx: number, newCy: number) => {
+      const newW = width();
+      const newH = height();
       const newCellSize = newMinDimension / (n - 1 || 1);
+
+      nodes.forEach(node => {
+        if ((node as any).isGround) {
+          const { gx, gy } = getGroundPos((node as any).gridR, (node as any).gridC, newW, newH);
+          node.fx = gx;
+          node.fy = gy;
+        }
+      });
+
       applyForces(newCellSize, newCx, newCy);
-      simulation.alpha(0.3).restart();
+      simulation.alpha(1).restart();
     }
   };
 }
