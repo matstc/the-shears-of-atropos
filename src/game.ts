@@ -21,9 +21,7 @@ export const createNewGame = async function(k: KAPLAYCtx<any, never>, boardDimen
   let nodeRadius = getNodeRadius()
   const { simulation, nodes: simulationNodes, edges: simulationEdges, onResize: simulationOnResize } = createGraph(boardDimension, minScreenDimension, width(), height())
   let isGameOver = false;
-  let isIntroPlaying = true;
-
-  wait(1, () => isIntroPlaying = false );
+  let firstClickReceived = false;
 
   const togglePause = () => {
     if (isPaused) {
@@ -122,8 +120,9 @@ export const createNewGame = async function(k: KAPLAYCtx<any, never>, boardDimen
 
   edgeInstances.map(edge => {
     edge.onClick(async () => {
-      if (isPaused || isGameOver|| isIntroPlaying) return;
+      if (isPaused || isGameOver) return;
       if (vsCpu && currentPlayer === 2) return;
+      firstClickReceived = true;
 
       if (isTouchscreen()) {
         edge.activate();
@@ -133,8 +132,9 @@ export const createNewGame = async function(k: KAPLAYCtx<any, never>, boardDimen
       edge.pluck();
     });
     edge.onHover(async () => {
-      if (isPaused || isGameOver|| isIntroPlaying) return;
+      if (isPaused || isGameOver) return;
       if (vsCpu && currentPlayer === 2) return;
+      if (isTouchscreen() && !firstClickReceived) return; // prevents a lingering hover effect from cutting an edge (mind blown)
 
       setCursor("pointer");
       edge.activate();
