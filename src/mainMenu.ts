@@ -4,7 +4,7 @@ import { addBackground, lightenHex, menuTextColor, playRandomSound } from "./sty
 
 const dimensions = [4, 9, 16, 25, 36];
 let dimension = 16;
-const cpuAlgorithms = ["RND", "AVG", "PRO"];
+const cpuAlgorithms = ["RND", "AVG"];
 let cpuAlgorithm = "AVG";
 let isMisere = false;
 let vsCpu = true;

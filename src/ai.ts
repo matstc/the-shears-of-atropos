@@ -52,9 +52,3 @@ export async function makeAverageMoveForCpu(edgeInstances: GameObj[], isMisere:b
   // Have not found a good move
   play(list[0]);
 }
-
-export async function makeProMoveForCpu(edgeInstances: GameObj[], isMisere:boolean) {
-  if (edgeInstances.length === 0) return;
-
-  return makeAverageMoveForCpu(edgeInstances, isMisere);
-}
