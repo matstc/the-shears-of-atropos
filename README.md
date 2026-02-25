@@ -1,6 +1,8 @@
-# Todos
+# The Shears of Atropos
 
-- Add better AI (and setting?)
+This is an implementation of the Strings-and-Coins game, a graph variant of the Dots-and-Boxes game.
+
+Hat tip to the book Winning Ways for Your Mathematical Plays.
 
 ![](screenshot.png)
 
@@ -8,7 +10,6 @@
 
 - `src` - source code for your kaplay project
 - `dist` - distribution folder, contains your index.html, built js bundle and static assets
-
 
 ## Development
 
@@ -24,10 +25,8 @@ will start a dev server at http://localhost:8000
 $ npm run build
 ```
 
-will build your js files into `dist/`
+will build into `dist/`
 
 ```sh
 $ npm run zip
 ```
-
-will build your game and package into a .zip file, you can upload to your server or itch.io / newground etc.
