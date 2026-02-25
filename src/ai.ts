@@ -19,6 +19,10 @@ const play = async function(edge:GameObj) {
   edge.pluck()
 }
 
+const isCapturable = (node:GameObj) => {
+  return !node.isGround && node.edges.length === 1;
+}
+
 export async function makeRandomMoveForCpu(edgeInstances: GameObj[], _isMisere: boolean) {
   if (edgeInstances.length === 0) return;
 
@@ -32,15 +36,14 @@ export async function makeAverageMoveForCpu(edgeInstances: GameObj[], isMisere:b
   if (edgeInstances.length === 0) return;
 
   const list = shuffleArray([...edgeInstances])
-  const targetEdge = null;
 
   for (const edge of list) {
-    if (!isMisere && (edge.node1.edges.length === 1 || edge.node2.edges.length === 1)) {
+    if (!isMisere && (isCapturable(edge.node1) || isCapturable(edge.node2))) {
       play(edge);
       return
     }
 
-    if (isMisere && edge.node1.edges.length > 1 && edge.node2.edges.length > 1) {
+    if (isMisere && !isCapturable(edge.node1) && !isCapturable(edge.node2)) {
       play(edge);
       return
     }
@@ -48,4 +51,10 @@ export async function makeAverageMoveForCpu(edgeInstances: GameObj[], isMisere:b
 
   // Have not found a good move
   play(list[0]);
+}
+
+export async function makeProMoveForCpu(edgeInstances: GameObj[], isMisere:boolean) {
+  if (edgeInstances.length === 0) return;
+
+  return makeAverageMoveForCpu(edgeInstances, isMisere);
 }

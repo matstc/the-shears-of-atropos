@@ -116,7 +116,7 @@ export async function createHud(k: KAPLAYCtx<any, never>, misere: boolean, vsCpu
     circle(50, { fill: false }),
     anchor("center"),
     pos(getP1TargetPos()),
-    outline(1, k.Color.fromHex(playerColors[1])),
+    outline(2, k.Color.fromHex(playerColors[1])),
     opacity(1),
     z(5),
   ]);
@@ -145,12 +145,11 @@ export async function createHud(k: KAPLAYCtx<any, never>, misere: boolean, vsCpu
         0.6,
         (v) => turnIndicator.pos = v,
         k.easings.easeInOutCubic
-      );
-
+      )
       tween(
         turnIndicator.outline.color,
         targetColor,
-        0.6,
+        0.8,
         (v) => turnIndicator.outline.color = v,
         easings.easeInCubic
       );

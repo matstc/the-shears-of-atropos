@@ -1,5 +1,5 @@
 import { GameObj, KAPLAYCtx } from "kaplay";
-import { makeAverageMoveForCpu, makeRandomMoveForCpu } from "./ai";
+import { makeAverageMoveForCpu, makeProMoveForCpu, makeRandomMoveForCpu } from "./ai";
 import { edgeFactory } from "./edge";
 import { createGraph } from "./graph";
 import { createHud } from "./hud";
@@ -17,7 +17,7 @@ export const createNewGame = async function(k: KAPLAYCtx<any, never>, boardDimen
   const hud = await createHud(k, misere, vsCpu)
   let minScreenDimension = Math.min(width(), height())
   let xOffset = (width() - minScreenDimension) / 2;
-  const getNodeRadius = () => Math.max(Math.floor(Math.min(width(), height()) / boardDimension / (55 / boardDimension)), 10);
+  const getNodeRadius = () => Math.max(Math.floor(Math.min(width(), height()) / boardDimension / (75 / boardDimension)), 10);
   let nodeRadius = getNodeRadius()
   const { simulation, nodes: simulationNodes, edges: simulationEdges, onResize: simulationOnResize } = createGraph(boardDimension, minScreenDimension, width(), height())
   let isGameOver = false;
@@ -37,6 +37,7 @@ export const createNewGame = async function(k: KAPLAYCtx<any, never>, boardDimen
 
   k.onKeyPress("escape", togglePause);
   k.onKeyPress("p", togglePause);
+  onKeyPress("enter", togglePause);
 
   const onRemoveNode = (sNode:GraphNode, node:GameObj) => {
     const idx = simulationNodes.indexOf(sNode);
@@ -73,8 +74,8 @@ export const createNewGame = async function(k: KAPLAYCtx<any, never>, boardDimen
     if (objIdx > -1) edgeInstances.splice(objIdx, 1);
 
     let nodesCaptured = 0;
-    if (edge.node1.isCaptured) nodesCaptured++;
-    if (edge.node2.isCaptured) nodesCaptured++;
+    if (edge.node1.isCaptured && !edge.node1.isGround) nodesCaptured++;
+    if (edge.node2.isCaptured && !edge.node2.isGround) nodesCaptured++;
 
     if (nodesCaptured > 0) {
       playRandomSound(k, "capture", 0.1)
@@ -91,13 +92,23 @@ export const createNewGame = async function(k: KAPLAYCtx<any, never>, boardDimen
         makeRandomMoveForCpu(edgeInstances, misere);
       } else if (cpuAlgorithm === "AVG") {
         makeAverageMoveForCpu(edgeInstances, misere);
+      } else if (cpuAlgorithm == "PRO") {
+        makeProMoveForCpu(edgeInstances, misere);
       } else {
         throw new Error(`No CPU algorithm found: ${cpuAlgorithm}`);
       }
     }
   };
 
-  const nodeInstances = simulationNodes.map(n => nodeFactory({ x: n.x!, y: n.y!, nodeRadius, boardDimension, onRemove: onRemoveNode.bind(null, n), getCurrentColor: () => playerColors[currentPlayer] }));
+  const nodeInstances = simulationNodes.map(n => nodeFactory({
+    x: n.fx || n.x!,
+    y: n.fy || n.y!,
+    nodeRadius,
+    boardDimension,
+    isGround: !!n.fx,
+    onRemove: onRemoveNode.bind(null, n),
+    getCurrentColor: () => playerColors[currentPlayer]
+  }));
   const edgeInstances = simulationEdges.map(e => {
     const sIdx = (e.source as GraphNode).id;
     const tIdx = (e.target as GraphNode).id;
@@ -156,10 +167,10 @@ export const createNewGame = async function(k: KAPLAYCtx<any, never>, boardDimen
 
   const forwardSimulation = function(smoothness:number) {
     simulation.tick();
-    const padding = 50;
+    const padding = Math.min(width(), height()) * 0.1;
 
     nodeInstances.forEach((obj, i) => {
-      if (obj.isCaptured) return;
+      if (obj.isCaptured || obj.isGround) return;
 
       const simNode = simulationNodes[i];
 

@@ -180,6 +180,8 @@ export function createMenu(k: KAPLAYCtx<any, never>, onStart:(dimension:number, 
     onStart(Math.floor(Math.sqrt(dimension)), isMisere, vsCpu, cpuAlgorithm)
   });
 
+  onKeyPress("enter", () => onStart(Math.floor(Math.sqrt(dimension)), isMisere, vsCpu, cpuAlgorithm));
+
   [startBtn].forEach(btn => {
     btn.onHoverUpdate(() => {
       btn.color = BLACK;
