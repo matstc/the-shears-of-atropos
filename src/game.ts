@@ -157,13 +157,14 @@ export const createNewGame = async function(k: KAPLAYCtx<any, never>, boardDimen
       isGameOver = true;
 
       let winner:Player1OrPlayer2|null;
+
       if (misere) {
         winner = scores[1] < scores[2] ? 1 : 2;
-        if (scores[1] === scores[2]) winner = null;
       } else {
         winner = scores[1] > scores[2] ? 1 : 2;
       }
 
+      if (scores[1] === scores[2]) winner = null;
       hud.showGameOver(winner)
       k.play("game-over", { volume: 0.3 });
       await wait(1)

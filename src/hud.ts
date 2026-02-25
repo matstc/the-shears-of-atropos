@@ -183,8 +183,8 @@ export async function createHud(k: KAPLAYCtx<any, never>, misere: boolean, vsCpu
         k.opacity(0)
       ]);
 
-      const string = winner === null ? "DRAW" : `Player ${winner} won`;
-      const explanation = misere ? "by collecting the least lives" : "by collecting the most lives";
+      const string = winner === null ? "It’s a draw" : `Player ${winner} won`;
+      const explanation = winner === null ? "" : misere ? "by collecting the least lives" : "by collecting the most lives";
 
       gameOverRoot.add([
         text(string, { font: "AdventProRegular", size: 47 }),

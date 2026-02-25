@@ -1,6 +1,5 @@
 # Todos
 
-- test ties
 - Add better AI (and setting?)
 
 ![](screenshot.png)
