@@ -21,7 +21,7 @@ export const nodeFactory = (opt: NodeOpt): GameObj => {
     circle(opt.nodeRadius, { fill: opt.isGround ? true : false }),
     pos(x, y),
     color(Color.fromHex(nodeColor)),
-    outline(1, Color.fromHex(nodeColor)),
+    outline(2, Color.fromHex(nodeColor)),
     anchor("center"),
     z(5),
     area(),

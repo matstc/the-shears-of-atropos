@@ -1,10 +1,11 @@
 import { KAPLAYCtx } from "kaplay";
 import { Player1OrPlayer2 } from "./types";
 
-export const menuTextColor = "#333333"
-export const backgroundColor = "#dddddd"
-export const edgeColor = "#000000"
-export const nodeColor = "#000000"
+export const menuTextColor = "#333333";
+export const backgroundColor = "#dddddd";
+export const edgeColor = "#000000";
+export const nodeColor = "#000000";
+
 export const playerColors:Record<Player1OrPlayer2, string> = {
   1: "#ffffff",
   2: "#d46363",
