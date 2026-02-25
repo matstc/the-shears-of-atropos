@@ -17,7 +17,7 @@ export const createNewGame = async function(k: KAPLAYCtx<any, never>, boardDimen
   const hud = await createHud(k, misere, vsCpu)
   let minScreenDimension = Math.min(width(), height())
   let xOffset = (width() - minScreenDimension) / 2;
-  const getNodeRadius = () => Math.max(Math.floor(Math.min(width(), height()) / boardDimension / (75 / boardDimension)), 10);
+  const getNodeRadius = () => Math.max(Math.floor(Math.min(width(), height()) / boardDimension / (75 / boardDimension)), 8);
   let nodeRadius = getNodeRadius()
   const { simulation, nodes: simulationNodes, edges: simulationEdges, onResize: simulationOnResize } = createGraph(boardDimension, minScreenDimension, width(), height())
   let isGameOver = false;

@@ -2,7 +2,6 @@ import {
   forceSimulation,
   forceLink,
   forceManyBody,
-  forceCenter,
   Simulation,
   forceX,
   forceY
@@ -26,16 +25,16 @@ export function createGraph(
   const cellSize = 0.9 * minWidthOrHeight / (n - 1 || 1);
   const cx = screenWidth / 2;
   const cy = screenHeight / 2;
-
+  const jitterScale = minWidthOrHeight / 2000;
   const maxRotation = 15 * (Math.PI / 180);
-  const angle = (Math.random() - 0.5) * 2 * maxRotation;
+  const angle = (Math.random() - 0.5) * 2 * maxRotation * jitterScale;
   const cos = Math.cos(angle);
   const sin = Math.sin(angle);
 
   for (let r = 0; r < n; r++) {
     for (let c = 0; c < n; c++) {
-      const rawX = c * cellSize + (Math.random() - 0.5) * 50;
-      const rawY = r * cellSize + (Math.random() - 0.5) * 50;
+      const rawX = c * cellSize + (Math.random() - 0.5) * 50 * jitterScale;
+      const rawY = r * cellSize + (Math.random() - 0.5) * 50 * jitterScale;
 
       const dx = rawX - cx;
       const dy = rawY - cy;
@@ -48,26 +47,40 @@ export function createGraph(
     }
   }
 
-  // Add ground nodes offscreen for each perimeter coin
   let groundId = n * n;
-
-  // Use a very large margin to ensure they stay offscreen during simulation movement
-  const groundMargin = 100;
-  // Calculate the distance from the center to any corner
-  const distToCorner = Math.sqrt(Math.pow(screenWidth / 2, 2) + Math.pow(screenHeight / 2, 2));
-  const diagonalDist = distToCorner + groundMargin;
+  const groundMargin = 150;
 
   for (let r = 0; r < n; r++) {
     for (let c = 0; c < n; c++) {
       if (r === 0 || r === n - 1 || c === 0 || c === n - 1) {
-        const node = nodes[r * n + c];
-        const angle = Math.atan2(node.y - cy, node.x - cx);
+        let gx, gy;
 
-        const gx = cx + diagonalDist * Math.cos(angle);
-        const gy = cy + diagonalDist * Math.sin(angle);
+        const hRatio = c / (n - 1);
+        const vRatio = r / (n - 1);
 
-        // fx and fy "fix" the node in place
-        nodes.push({ id: groundId, x: gx, y: gy, fx: gx, fy: gy });
+        if (r === 0) { // Top Edge
+          gy = -groundMargin;
+          gx = (c === 0) ? -groundMargin : (c === n - 1) ? screenWidth + groundMargin : hRatio * screenWidth;
+        } else if (r === n - 1) { // Bottom Edge
+          gy = screenHeight + groundMargin;
+          gx = (c === 0) ? -groundMargin : (c === n - 1) ? screenWidth + groundMargin : hRatio * screenWidth;
+        } else if (c === 0) { // Left Edge
+          gx = -groundMargin;
+          gy = vRatio * screenHeight;
+        } else { // Right Edge
+          gx = screenWidth + groundMargin;
+          gy = vRatio * screenHeight;
+        }
+
+        nodes.push({
+          id: groundId,
+          x: gx,
+          y: gy,
+          fx: gx,
+          fy: gy,
+          isGround: true
+        });
+
         edges.push({ source: r * n + c, target: groundId });
         groundId++;
       }
@@ -90,7 +103,7 @@ export function createGraph(
     }
   }
 
-  const simulation = forceSimulation<GraphNodeWithPosition>(nodes)
+  const simulation = forceSimulation<GraphNodeWithPosition>(nodes);
 
   const applyForces = function (coefficient:number, x:number, y:number) {
     const linkForce = forceLink<GraphNodeWithPosition, ExtendedEdge>(edges)
@@ -101,7 +114,7 @@ export function createGraph(
       return isGroundEdge ? 0.01 : 0.05;
     });
 
-    const manyBody = forceManyBody().strength(-coefficient * 5);
+    const manyBody = forceManyBody().strength(-coefficient * 3.5);
 
     return simulation.force("link", linkForce)
     .force("charge", manyBody)
