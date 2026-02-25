@@ -131,8 +131,8 @@ export function createMenu(k: KAPLAYCtx<any, never>, onStart:(dimension:number, 
       );
     };
 
-    prevBtn.onClick(() => { playRandomSound(k, "select"); onPrev(); updateUI(); });
-    nextBtn.onClick(() => { playRandomSound(k, "select"); onNext(); updateUI(); });
+    prevBtn.onClick(() => { play("select"); onPrev(); updateUI(); });
+    nextBtn.onClick(() => { play("select"); onNext(); updateUI(); });
 
     [prevBtn, nextBtn].forEach(btn => {
       btn.onHoverUpdate(() => {

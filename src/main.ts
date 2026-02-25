@@ -12,17 +12,17 @@ k.loadRoot("./");
 k.loadFont("AdventProRegular", "fonts/AdventPro-Regular.ttf");
 k.loadFont("AdventProBold", "fonts/AdventPro-Bold.ttf");
 k.loadFont("AdventProBlack", "fonts/AdventPro-Black.ttf");
-k.loadSound("game-start", "sounds/game-start.mp3");
-k.loadSound("game-over", "sounds/game-over.mp3");
-k.loadSound("select1", "sounds/select1.mp3");
-k.loadSound("select2", "sounds/select2.mp3");
-k.loadSound("select3", "sounds/select3.mp3");
-k.loadSound("blade1", "sounds/blade1.mp3");
-k.loadSound("blade2", "sounds/blade2.mp3");
-k.loadSound("blade3", "sounds/blade3.mp3");
-k.loadSound("capture1", "sounds/capture1.mp3");
-k.loadSound("capture2", "sounds/capture2.mp3");
-k.loadSound("capture3", "sounds/capture3.mp3");
+const audio = new Audio();
+const extension = audio.canPlayType('audio/ogg; codecs="vorbis"') ? "ogg" : "mp3";
+k.loadSound("game-start", `sounds/game-start.${extension}`);
+k.loadSound("game-over", `sounds/game-over.${extension}`);
+k.loadSound("select", `sounds/select.${extension}`);
+k.loadSound("blade1", `sounds/blade1.${extension}`);
+k.loadSound("blade2", `sounds/blade2.${extension}`);
+k.loadSound("blade3", `sounds/blade3.${extension}`);
+k.loadSound("capture1", `sounds/capture1.${extension}`);
+k.loadSound("capture2", `sounds/capture2.${extension}`);
+k.loadSound("capture3", `sounds/capture3.${extension}`);
 
 let mainMenu = null
 let game = null
