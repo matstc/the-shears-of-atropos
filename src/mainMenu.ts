@@ -13,15 +13,15 @@ export function createMenu(k: KAPLAYCtx<any, never>, onStart:(dimension:number, 
   addBackground(k)
   k.play("game-start", { volume: 0 })
   const textColor = Color.fromHex(menuTextColor)
-  const yGap = 85;
+  const yGap = 75;
   const getTitleSize = () => width() < 400 ? 37 : width() < 420 ? 40 : width() < 1024 ? 41 : 64
-  const threadColors = [WHITE, Color.fromHex("#eeeeee"), Color.fromHex("#f1f1f1")]
+  const threadColors = [Color.fromHex("#e1e1e1"), Color.fromHex("#eeeeee"), Color.fromHex("#f1f1f1")]
   if (width() > 1024) {
     for (let i = 0; i < 5; i++) {
       let x = Math.random() * width() / 4;
 
       add([
-        rect(1, height()),
+        rect(Math.floor(Math.random() * 20 + 2), height()),
         pos(x, 0),
         color(threadColors[Math.floor(Math.random() * 3)])
       ])
@@ -30,7 +30,7 @@ export function createMenu(k: KAPLAYCtx<any, never>, onStart:(dimension:number, 
 
   const title = add([
     text("THE SHEARS OF ATROPOS", { font: "AdventProBlack", size: getTitleSize() }),
-    pos(k.width() / 2, width() < 1024 ? 80 : 120),
+    pos(k.width() / 2, width() < 1024 ? 50 : 120),
     anchor("center"),
     color(textColor),
     fixed(),
@@ -44,21 +44,21 @@ export function createMenu(k: KAPLAYCtx<any, never>, onStart:(dimension:number, 
   const menuXOffset = Math.min(200, width() / 2 - 10)
 
   const lineContainer = add([
-    pos(k.width() / 2 - menuXOffset, width() < 1024 ? 60 : 90),
+    pos(k.width() / 2 - menuXOffset, width() < 1024 ? 90 : 210),
     fixed()
   ])
 
   helpTextLines.map((line, i) => {
     lineContainer.add([
       text(line, { font: "AdventProRegular", size: width() < 375 ? 19 : 20 }),
-      pos(0, lineContainer.pos.y + i * 25),
+      pos(0, i * 25),
       color(lightenHex(menuTextColor, 30)),
       fixed()
     ])
   })
 
   const menu = add([
-    pos(k.width() / 2 - menuXOffset,  width() < 1024 ? Math.max(k.height() / 4, 220) : k.height() / 3),
+    pos(k.width() / 2 - menuXOffset,  width() < 1024 ? 170 : 300),
     fixed(),
   ]);
 
@@ -118,7 +118,8 @@ export function createMenu(k: KAPLAYCtx<any, never>, onStart:(dimension:number, 
       const value = getValue();
       valueText.opacity = 0;
       valueText.text = value;
-      let xOffset = value.length >= 3 ? 33 : value.length == 2 ? 39 : 44;
+      let xOffset = value.length >= 3 ? 33 : value.length == 2 ? 38 : 44;
+      if (value.indexOf("FF") > -1) xOffset += 2;
       if (value.indexOf("1") > -1) xOffset += 3;
       valueText.pos.x = valueStartX + xOffset;
 
@@ -168,7 +169,12 @@ export function createMenu(k: KAPLAYCtx<any, never>, onStart:(dimension:number, 
   () => isMisere = !isMisere
   );
 
-  const startBtnHeight = height() < 635 ? height() - menu.pos.y - 20 : Math.max(yGap * 4.7, height() / 2.2)
+  addMenuRow(yGap * 4, "Fullscreen", "Toggle fullscreen mode", () => k.isFullscreen() ? "ON" : "OFF",
+    () => setFullscreen(!isFullscreen()),
+    () => setFullscreen(!isFullscreen())
+  );
+
+  const startBtnHeight = height() < 660 ? height() - menu.pos.y - 20 : Math.max(yGap * 5.5, height() / 2.2)
   const startBtn = menu.add([
     text("Start Game", { font: "AdventProRegular", size: 32 }),
     pos(menuXOffset, startBtnHeight),
