@@ -5,7 +5,7 @@ import { backgroundColor } from "./styles";
 
 const k = kaplay({
   background: backgroundColor,
-  pixelDensity: window.devicePixelRatio
+  pixelDensity: window.devicePixelRatio,
 });
 
 k.loadRoot("./");

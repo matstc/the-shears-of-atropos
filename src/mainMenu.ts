@@ -169,9 +169,21 @@ export function createMenu(k: KAPLAYCtx<any, never>, onStart:(dimension:number, 
   () => isMisere = !isMisere
   );
 
-  addMenuRow(yGap * 4, "Fullscreen", "Toggle fullscreen mode", () => k.isFullscreen() ? "ON" : "OFF",
-    () => setFullscreen(!isFullscreen()),
-    () => setFullscreen(!isFullscreen())
+  const isFullscreen = () => {
+    return !!document.fullscreenElement;
+  }
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+    } else {
+      document.exitFullscreen();
+    }
+  }
+
+  addMenuRow(yGap * 4, "Fullscreen", "Toggle fullscreen mode", () => isFullscreen() ? "ON" : "OFF",
+    toggleFullscreen,
+    toggleFullscreen
   );
 
   const startBtnHeight = height() < 660 ? height() - menu.pos.y - 20 : Math.max(yGap * 5.5, height() / 2.2)
