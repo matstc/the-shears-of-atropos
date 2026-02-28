@@ -37,8 +37,8 @@ export function createMenu(k: KAPLAYCtx<any, never>, onStart:(dimension:number, 
   ]);
 
   const helpTextLines = [
-    "Collect lives by cutting all their connecting threads.",
-    "One cut per turn but if you collect a life, cut again."
+    "Collect lives by cutting all the connecting threads.",
+    "One cut per turn but after you collect, cut again."
   ]
 
   const menuXOffset = Math.min(200, width() / 2 - 10)
@@ -50,7 +50,7 @@ export function createMenu(k: KAPLAYCtx<any, never>, onStart:(dimension:number, 
 
   helpTextLines.map((line, i) => {
     lineContainer.add([
-      text(line, { font: "AdventProRegular", size: width() < 375 ? 19 : 20 }),
+      text(line, { font: "AdventProRegular", size: width() < 400 ? 19 : 22 }),
       pos(0, i * 25),
       color(lightenHex(menuTextColor, 30)),
       fixed()
@@ -109,7 +109,7 @@ export function createMenu(k: KAPLAYCtx<any, never>, onStart:(dimension:number, 
     ]);
 
     row.add([
-      text(description, { font: "AdventProRegular", size: 20 }),
+      text(description, { font: "AdventProRegular", size: 22 }),
       pos(0, 30),
       color(lightenHex(menuTextColor, 30))
     ])
@@ -173,6 +173,7 @@ export function createMenu(k: KAPLAYCtx<any, never>, onStart:(dimension:number, 
     return !!document.fullscreenElement;
   }
 
+  const canGoFullscreen = !!document.documentElement.requestFullscreen;
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen();
@@ -181,12 +182,14 @@ export function createMenu(k: KAPLAYCtx<any, never>, onStart:(dimension:number, 
     }
   }
 
-  addMenuRow(yGap * 4, "Fullscreen", "Toggle fullscreen mode", () => isFullscreen() ? "ON" : "OFF",
-    toggleFullscreen,
-    toggleFullscreen
-  );
+  if (canGoFullscreen) {
+    addMenuRow(yGap * 4, "Fullscreen", "Toggle fullscreen mode", () => isFullscreen() ? "ON" : "OFF",
+      toggleFullscreen,
+      toggleFullscreen
+    );
+  }
 
-  const startBtnHeight = height() < 660 ? height() - menu.pos.y - 20 : Math.max(yGap * 5.5, height() / 2.2)
+  const startBtnHeight = height() < 660 ? height() - menu.pos.y - 20 : Math.max(yGap * (canGoFullscreen ? 5.5 : 4.5), height() / 2.2)
   const startBtn = menu.add([
     text("Start Game", { font: "AdventProRegular", size: 32 }),
     pos(menuXOffset, startBtnHeight),

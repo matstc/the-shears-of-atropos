@@ -94,7 +94,7 @@ export async function createHud(k: KAPLAYCtx<any, never>, misere: boolean, vsCpu
     ])
 
     misereBadge.add([
-      rect(60, 24, { radius: 3 }),
+      rect(65, 24, { radius: 3 }),
       pos(0, 0),
       anchor("center"),
       color(Color.fromHex("#888888")),
@@ -103,7 +103,7 @@ export async function createHud(k: KAPLAYCtx<any, never>, misere: boolean, vsCpu
     ]);
 
     misereBadge.add([
-      text("MlSERE", { font: "AdventProRegular", size: 20 }),
+      text("MlSERE", { font: "AdventProRegular", size: 22 }),
       pos(0, 0),
       anchor("center"),
       color(WHITE),
@@ -196,7 +196,7 @@ export async function createHud(k: KAPLAYCtx<any, never>, misere: boolean, vsCpu
       ]);
 
       gameOverRoot.add([
-        text(explanation, { font: "AdventProRegular", size: 20 }),
+        text(explanation, { font: "AdventProRegular", size: 22 }),
         pos(0, 50),
         color(winner ? Color.fromHex(playerColors[winner]) : Color.fromHex(lightenHex(menuTextColor, 30))),
         anchor("center"),
